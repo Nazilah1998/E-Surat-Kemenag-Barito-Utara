@@ -1,7 +1,31 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
+  serverExternalPackages: ["pg"],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://challenges.cloudflare.com",
+              "frame-src https://challenges.cloudflare.com",
+              "connect-src 'self' https://challenges.cloudflare.com https://db.kemenag-baritoutara.com",
+              "worker-src blob:",
+            ].join("; "),
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
