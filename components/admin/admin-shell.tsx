@@ -7,9 +7,13 @@ import { AdminTopbar } from "@/components/admin/admin-topbar";
 export function AdminShell({
   children,
   userEmail,
+  userName,
+  isSuperAdmin = false,
 }: {
   children: React.ReactNode;
   userEmail: string;
+  userName?: string;
+  isSuperAdmin?: boolean;
 }) {
   const [sidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -18,7 +22,7 @@ export function AdminShell({
     <div className="flex h-screen overflow-hidden bg-slate-50 fixed inset-0 w-full">
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
-        <AdminSidebar collapsed={sidebarCollapsed} />
+        <AdminSidebar collapsed={sidebarCollapsed} isSuperAdmin={isSuperAdmin} />
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -33,13 +37,18 @@ export function AdminShell({
           mobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <AdminSidebar collapsed={false} />
+        <AdminSidebar 
+          collapsed={false} 
+          isSuperAdmin={isSuperAdmin} 
+          onLinkClick={() => setMobileSidebarOpen(false)} 
+        />
       </div>
 
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar
           onToggleSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
           userEmail={userEmail}
+          userName={userName || userEmail}
         />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6 custom-scrollbar">
           {children}

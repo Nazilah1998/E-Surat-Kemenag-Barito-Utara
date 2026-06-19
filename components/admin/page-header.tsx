@@ -15,26 +15,26 @@ export function PageHeader({
   externalLink?: string;
 }) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-gradient-to-r from-[#064e3b] to-[#059669] px-5 py-4 shadow-md shadow-emerald-900/20 relative group">
-      <div className="flex items-center gap-3.5">
+    <div className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-[#064e3b] to-[#059669] px-4 sm:px-5 py-4 shadow-md shadow-emerald-900/20 relative group">
+      <div className="flex items-center gap-3 min-w-0">
         {Icon && (
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 border border-white/20 text-white shadow-md shadow-emerald-500/20">
             <Icon className="h-5 w-5" />
           </div>
         )}
-        <div>
-          <h1 className="text-lg font-bold text-white tracking-tight sm:text-xl leading-tight">
+        <div className="min-w-0">
+          <h1 className="text-base sm:text-xl font-bold text-white tracking-tight leading-tight truncate">
             {title}
           </h1>
           {description && (
-            <p className="mt-0.5 text-sm text-emerald-100/80 leading-relaxed max-w-lg">
+            <p className="mt-0.5 text-[10px] sm:text-sm text-emerald-100/80 leading-relaxed truncate">
               {description}
             </p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
         {actions && <div className="flex items-center gap-2">{actions}</div>}
 
         {externalLink && (

@@ -380,7 +380,7 @@ export function LogAuditManager({
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 bg-slate-50/30">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:

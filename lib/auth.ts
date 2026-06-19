@@ -20,3 +20,17 @@ export const requireAuth = cache(async () => {
   }
   return user;
 });
+
+export const isSuperAdmin = cache(async () => {
+  const user = await getCurrentUser();
+  if (!user?.email) return false;
+  return user.email === process.env.SUPER_ADMIN_EMAIL;
+});
+
+export const requireSuperAdmin = cache(async () => {
+  const user = await requireAuth();
+  if (!user.email || user.email !== process.env.SUPER_ADMIN_EMAIL) {
+    throw new Error("Forbidden: only super admin can perform this action");
+  }
+  return user;
+});

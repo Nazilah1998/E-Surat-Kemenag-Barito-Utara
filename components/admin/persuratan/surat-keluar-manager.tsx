@@ -24,34 +24,12 @@ import { ModernSelect } from "@/components/ui/modern-select";
 import { m, AnimatePresence } from "framer-motion";
 import { toTitleCase } from "@/lib/utils";
 import { toast } from "sonner";
-import { AGENDA_OPTIONS, UNIT_KERJA_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/badge";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 
-const UNIT_COLORS: Record<string, string> = {
-  Sekjend: "bg-emerald-50 text-emerald-600 border-emerald-100",
-  "Bimas Islam": "bg-emerald-50 text-emerald-600 border-emerald-100",
-  "Bimas Kristen": "bg-purple-50 text-purple-600 border-purple-100",
-  "Pendidikan Madrasah": "bg-amber-50 text-amber-600 border-amber-100",
-  "Pendidikan Agama Islam": "bg-sky-50 text-sky-600 border-sky-100",
-  "Pendidikan Diniyah & Pontren": "bg-indigo-50 text-indigo-600 border-indigo-100",
-  "Penyelenggara Hindu": "bg-rose-50 text-rose-600 border-rose-100",
-  "Penyelenggara Zakat & Wakaf": "bg-teal-50 text-teal-600 border-teal-100",
-};
-
-const AGENDA_COLORS: Record<string, string> = {
-  "Surat Dinas": "bg-emerald-50 text-emerald-600 border-emerald-100",
-  "Surat Keputusan": "bg-red-50 text-red-600 border-red-100",
-  "Surat Tugas": "bg-violet-50 text-violet-600 border-violet-100",
-  "Surat Undangan": "bg-cyan-50 text-cyan-600 border-cyan-100",
-  "Surat Pengantar": "bg-slate-50 text-slate-600 border-slate-100",
-  "Surat Keterangan": "bg-orange-50 text-orange-600 border-orange-100",
-  "Surat Pernyataan": "bg-pink-50 text-pink-600 border-pink-100",
-  "Surat Cuti": "bg-lime-50 text-lime-600 border-lime-100",
-  "Berita Acara": "bg-zinc-50 text-zinc-600 border-zinc-100",
-  "Nota Dinas": "bg-emerald-50 text-emerald-600 border-emerald-100",
-};
+import { BADGE_COLOR_MAP } from "@/lib/constants";
 
 export interface SuratKeluar {
   id: string;
@@ -67,9 +45,17 @@ export interface SuratKeluar {
 
 export function SuratKeluarManager({
   initialData = [],
+  initialAgendaOptions = [],
+  initialUnitKerjaOptions = [],
+  agendaColors = {},
+  unitKerjaColors = {},
 }: {
   initialData?: SuratKeluar[];
   initialTotal?: number;
+  initialAgendaOptions?: string[];
+  initialUnitKerjaOptions?: string[];
+  agendaColors?: Record<string, string>;
+  unitKerjaColors?: Record<string, string>;
 }) {
   const [items, setItems] = useState<SuratKeluar[]>(initialData);
   const [loading, setLoading] = useState(false);
@@ -99,8 +85,8 @@ export function SuratKeluarManager({
     tanggal_surat: "",
     tujuan_surat: "",
     perihal: "",
-    unit_kerja: "Sekjend",
-    agenda: "Surat Dinas",
+    unit_kerja: initialUnitKerjaOptions[0] || "",
+    agenda: initialAgendaOptions[0] || "",
     status: "published",
   });
   const [lampiranFile, setLampiranFile] = useState<File | null>(null);
@@ -172,8 +158,8 @@ export function SuratKeluarManager({
       tanggal_surat: "",
       tujuan_surat: "",
       perihal: "",
-      unit_kerja: "Sekjend",
-      agenda: "Surat Dinas",
+      unit_kerja: initialUnitKerjaOptions[0] || "",
+      agenda: initialAgendaOptions[0] || "",
       status: "published",
     };
     setFormData(defaultData);
@@ -439,7 +425,7 @@ export function SuratKeluarManager({
                       <td className="px-4 py-3.5">
                         <span
                           className={`inline-flex px-2 py-1 text-[10px] font-bold rounded-lg border ${
-                            AGENDA_COLORS[item.agenda] ||
+                            (agendaColors[item.agenda] ? BADGE_COLOR_MAP[agendaColors[item.agenda]] : null) ||
                             "bg-slate-50 text-slate-600 border-slate-200"
                           }`}
                         >
@@ -449,7 +435,7 @@ export function SuratKeluarManager({
                       <td className="px-4 py-3.5">
                         <span
                           className={`inline-flex px-2 py-1 text-[10px] font-bold rounded-lg border ${
-                            UNIT_COLORS[item.unit_kerja] ||
+                            (unitKerjaColors[item.unit_kerja] ? BADGE_COLOR_MAP[unitKerjaColors[item.unit_kerja]] : null) ||
                             "bg-slate-50 text-slate-600 border-slate-200"
                           }`}
                         >
@@ -504,7 +490,7 @@ export function SuratKeluarManager({
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 bg-slate-50/30">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
@@ -628,7 +614,7 @@ export function SuratKeluarManager({
                     </label>
                     <ModernSelect
                       name="agenda"
-                      options={AGENDA_OPTIONS}
+                      options={initialAgendaOptions}
                       value={formData.agenda}
                       onChange={(val) =>
                         setFormData({ ...formData, agenda: val })
@@ -644,7 +630,7 @@ export function SuratKeluarManager({
                     </label>
                     <ModernSelect
                       name="unit_kerja"
-                      options={UNIT_KERJA_OPTIONS}
+                      options={initialUnitKerjaOptions}
                       value={formData.unit_kerja}
                       onChange={(val) =>
                         setFormData({ ...formData, unit_kerja: val })
@@ -810,7 +796,7 @@ export function SuratKeluarManager({
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border ${
-                      AGENDA_COLORS[detailItem.agenda] ||
+                      (agendaColors[detailItem.agenda] ? BADGE_COLOR_MAP[agendaColors[detailItem.agenda]] : null) ||
                       "bg-slate-50 text-slate-600 border-slate-200"
                     }`}
                   >
@@ -818,7 +804,7 @@ export function SuratKeluarManager({
                   </span>
                   <span
                     className={`inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border ${
-                      UNIT_COLORS[detailItem.unit_kerja] ||
+                      (unitKerjaColors[detailItem.unit_kerja] ? BADGE_COLOR_MAP[unitKerjaColors[detailItem.unit_kerja]] : null) ||
                       "bg-slate-50 text-slate-600 border-slate-200"
                     }`}
                   >

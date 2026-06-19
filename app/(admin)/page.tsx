@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { suratMasuk, suratKeluar } from "@/lib/db/schema";
 import { isNull, count, sql } from "drizzle-orm";
 import { PageHeader } from "@/components/admin/page-header";
-import { Inbox, Send, ChevronRight } from "lucide-react";
+import { Inbox, Send } from "lucide-react";
 import Link from "next/link";
 
 export default async function DashboardPage() {
@@ -47,10 +47,19 @@ export default async function DashboardPage() {
     },
   ];
 
-  const quickLinks = [
-    { label: "Buat Surat Masuk", href: "/surat-masuk", icon: Inbox },
-    { label: "Buat Surat Keluar", href: "/surat-keluar", icon: Send },
-  ];
+  const recentSuratMasuk = await db
+    .select()
+    .from(suratMasuk)
+    .where(isNull(suratMasuk.deletedAt))
+    .orderBy(sql`${suratMasuk.createdAt} DESC`)
+    .limit(5);
+
+  const recentSuratKeluar = await db
+    .select()
+    .from(suratKeluar)
+    .where(isNull(suratKeluar.deletedAt))
+    .orderBy(sql`${suratKeluar.createdAt} DESC`)
+    .limit(5);
 
   return (
     <div className="space-y-6">
@@ -60,29 +69,31 @@ export default async function DashboardPage() {
       />
 
       {/* Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         {metrics.map((m) => (
           <div
             key={m.label}
-            className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+            className="group rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
           >
-            <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
               <div
-                className={`h-12 w-12 rounded-2xl flex items-center justify-center border shadow-sm ${
+                className={`h-9 w-9 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl flex items-center justify-center border shadow-sm shrink-0 ${
                   m.color === "emerald"
                     ? "bg-emerald-50 text-emerald-600 border-emerald-100/50"
                     : "bg-violet-50 text-violet-600 border-violet-100/50"
                 }`}
               >
-                <m.icon className="h-6 w-6" />
+                <m.icon className="h-4 w-4 sm:h-6 sm:w-6" />
               </div>
             </div>
-            <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-              {m.label}
-            </p>
-            <p className="text-3xl font-black text-slate-900 tabular-nums">
-              {m.value}
-            </p>
+            <div>
+              <p className="text-[9px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
+                {m.label}
+              </p>
+              <p className="text-xl sm:text-3xl font-black text-slate-900 tabular-nums">
+                {m.value}
+              </p>
+            </div>
             <div className="mt-3 h-1 w-full rounded-full bg-slate-100 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
@@ -96,27 +107,70 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Quick Links */}
-      <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm">
-        <div className="px-5 py-4 border-b border-slate-100">
-          <h3 className="text-sm font-bold text-slate-800">Akses Cepat</h3>
-        </div>
-        <div className="p-2">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center justify-between rounded-xl p-3 hover:bg-slate-50 transition-all group/link"
-            >
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <link.icon className="h-4 w-4 text-emerald-600" />
-                </div>
-                <span className="text-xs font-bold text-slate-700">{link.label}</span>
-              </div>
-              <ChevronRight className="h-4 w-4 text-slate-300 group-hover/link:text-slate-500 transition-colors" />
+      {/* Recent Letters */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Surat Masuk */}
+        <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Inbox className="h-4 w-4 text-emerald-600" />
+              <h3 className="text-sm font-bold text-slate-800">Surat Masuk Terbaru</h3>
+            </div>
+            <Link href="/surat-masuk" className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700">
+              Lihat Semua
             </Link>
-          ))}
+          </div>
+          <div className="divide-y divide-slate-100 flex-1">
+            {recentSuratMasuk.length > 0 ? (
+              recentSuratMasuk.map((surat) => (
+                <div key={surat.id} className="p-4 hover:bg-slate-50 transition-colors">
+                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{surat.perihal}</p>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <p className="text-[10px] font-medium text-slate-500">{surat.asalSurat}</p>
+                    <p className="text-[10px] font-semibold text-slate-400">
+                      {new Date(surat.createdAt).toLocaleDateString("id-ID")}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center">
+                <p className="text-xs font-medium text-slate-400">Belum ada surat masuk</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Surat Keluar */}
+        <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Send className="h-4 w-4 text-violet-600" />
+              <h3 className="text-sm font-bold text-slate-800">Surat Keluar Terbaru</h3>
+            </div>
+            <Link href="/surat-keluar" className="text-[10px] font-bold text-violet-600 hover:text-violet-700">
+              Lihat Semua
+            </Link>
+          </div>
+          <div className="divide-y divide-slate-100 flex-1">
+            {recentSuratKeluar.length > 0 ? (
+              recentSuratKeluar.map((surat) => (
+                <div key={surat.id} className="p-4 hover:bg-slate-50 transition-colors">
+                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{surat.perihal}</p>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <p className="text-[10px] font-medium text-slate-500">{surat.tujuanSurat}</p>
+                    <p className="text-[10px] font-semibold text-slate-400">
+                      {new Date(surat.createdAt).toLocaleDateString("id-ID")}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center">
+                <p className="text-xs font-medium text-slate-400">Belum ada surat keluar</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

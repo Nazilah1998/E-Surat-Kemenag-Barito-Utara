@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Inbox, Send, History, type LucideIcon, ShieldCheck, ChevronRight } from "lucide-react";
+import {
+  LayoutDashboard,
+  Inbox,
+  Send,
+  History,
+  Users,
+  Settings2,
+  type LucideIcon,
+  ChevronRight,
+  Shield,
+  Mail,
+} from "lucide-react";
 import { SystemHealthBadge } from "@/components/admin/system-health-badge";
 
 interface NavItem {
@@ -10,23 +21,60 @@ interface NavItem {
   href: string;
   icon: LucideIcon;
   group: string;
+  superAdminOnly?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard, group: "Utama" },
-  { label: "Surat Masuk", href: "/surat-masuk", icon: Inbox, group: "Tata Naskah" },
-  { label: "Surat Keluar", href: "/surat-keluar", icon: Send, group: "Tata Naskah" },
+  {
+    label: "Surat Masuk",
+    href: "/surat-masuk",
+    icon: Inbox,
+    group: "Tata Naskah",
+  },
+  {
+    label: "Surat Keluar",
+    href: "/surat-keluar",
+    icon: Send,
+    group: "Tata Naskah",
+  },
+  {
+    label: "Pengguna",
+    href: "/pengguna",
+    icon: Users,
+    group: "Sistem",
+    superAdminOnly: true,
+  },
+  {
+    label: "Manajemen Surat",
+    href: "/manajemen-surat",
+    icon: Settings2,
+    group: "Sistem",
+    superAdminOnly: true,
+  },
   { label: "Log Audit", href: "/log-audit", icon: History, group: "Sistem" },
 ];
 
 const GROUP_ORDER = ["Utama", "Tata Naskah", "Sistem"];
 
-export function AdminSidebar({ collapsed }: { collapsed: boolean }) {
+export function AdminSidebar({
+  collapsed,
+  isSuperAdmin = false,
+  onLinkClick,
+}: {
+  collapsed: boolean;
+  isSuperAdmin?: boolean;
+  onLinkClick?: () => void;
+}) {
   const pathname = usePathname();
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => !item.superAdminOnly || isSuperAdmin,
+  );
 
   const grouped = GROUP_ORDER.map((group) => ({
     group,
-    items: NAV_ITEMS.filter((item) => item.group === group),
+    items: visibleItems.filter((item) => item.group === group),
   }));
 
   return (
@@ -37,12 +85,15 @@ export function AdminSidebar({ collapsed }: { collapsed: boolean }) {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-white/5 shrink-0">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#064e3b] to-[#059669] flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 shrink-0">
-          <ShieldCheck className="h-5 w-5" />
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#064e3b] to-[#059669] flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 shrink-0 relative">
+          <Shield className="h-[22px] w-[22px] absolute" strokeWidth={2} />
+          <Mail className="h-3 w-3 absolute mt-[1px]" strokeWidth={2.5} />
         </div>
         {!collapsed && (
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white/90 truncate">E-Surat</p>
+            <p className="text-sm font-bold text-white/90 truncate">
+              E-Surat Digital
+            </p>
             <p className="text-[10px] font-semibold text-white/30 truncate leading-tight">
               Kemenag Barito Utara
             </p>
@@ -67,6 +118,7 @@ export function AdminSidebar({ collapsed }: { collapsed: boolean }) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={onLinkClick}
                       className={`group/link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative ${
                         isActive
                           ? "bg-emerald-500/15 text-emerald-400"
@@ -76,7 +128,9 @@ export function AdminSidebar({ collapsed }: { collapsed: boolean }) {
                     >
                       <item.icon
                         className={`h-4 w-4 shrink-0 ${
-                          isActive ? "text-emerald-400" : "text-white/40 group-hover/link:text-white/60"
+                          isActive
+                            ? "text-emerald-400"
+                            : "text-white/40 group-hover/link:text-white/60"
                         }`}
                       />
                       {!collapsed && (

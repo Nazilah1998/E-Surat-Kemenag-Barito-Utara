@@ -24,7 +24,7 @@ import { m, AnimatePresence } from "framer-motion";
 import { ModernSelect } from "@/components/ui/modern-select";
 import { toTitleCase } from "@/lib/utils";
 import { toast } from "sonner";
-import { AGENDA_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/badge";
 import { AlertDialog } from "@/components/ui/alert-dialog";
@@ -43,9 +43,11 @@ export interface SuratMasuk {
 
 export function SuratMasukManager({
   initialData = [],
+  initialAgendaOptions = [],
 }: {
   initialData?: SuratMasuk[];
   initialTotal?: number;
+  initialAgendaOptions?: string[];
 }) {
   const [items, setItems] = useState<SuratMasuk[]>(initialData);
   const [loading, setLoading] = useState(false);
@@ -468,7 +470,7 @@ export function SuratMasukManager({
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 bg-slate-50/30">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
@@ -600,9 +602,9 @@ export function SuratMasukManager({
                   <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Jenis Agenda
                   </label>
-                  <ModernSelect
-                    name="agenda"
-                    options={AGENDA_OPTIONS}
+                    <ModernSelect
+                      name="agenda"
+                      options={initialAgendaOptions}
                     value={formData.agenda}
                     onChange={(val) =>
                       setFormData({ ...formData, agenda: val })
