@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { FramerProvider } from "@/components/providers/framer-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -13,18 +14,19 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://surat.kemenag-baritoutara.com"),
   title: {
-    default: "Login E-Surat | Kemenag Barito Utara",
-    template: "%s | E-Surat Kemenag Barito Utara",
+    default: "E-Surat Mandau | Kemenag Barito Utara",
+    template: "%s | E-Surat Mandau",
   },
-  description: "Portal resmi Sistem Informasi Manajemen Persuratan Elektronik (E-Surat) Kementerian Agama (Kemenag) Kabupaten Barito Utara. Masuk ke panel admin untuk mengelola administrasi persuratan.",
+  description:
+    "Portal resmi Sistem Informasi Manajemen Persuratan Elektronik (E-Surat) Kementerian Agama (Kemenag) Kabupaten Barito Utara. Masuk ke panel admin untuk mengelola administrasi persuratan.",
   keywords: [
     "e-surat kemenag",
     "surat kemenag barito utara",
     "kementerian agama barito utara",
     "persuratan elektronik kemenag",
     "aplikasi surat kemenag",
-    "login e-surat kemenag",
-    "sistem surat kemenag"
+    "e-surat mandau kemenag",
+    "sistem surat kemenag",
   ],
   authors: [{ name: "Kemenag Barito Utara" }],
   creator: "Kemenag Barito Utara",
@@ -32,9 +34,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     url: "https://surat.kemenag-baritoutara.com",
-    title: "Login E-Surat | Kemenag Barito Utara",
-    description: "Portal resmi Sistem Informasi Manajemen Persuratan Elektronik Kementerian Agama Kabupaten Barito Utara.",
-    siteName: "E-Surat Kemenag Barito Utara",
+    title: "E-Surat Mandau | Kemenag Barito Utara",
+    description:
+      "Portal resmi Sistem Informasi Manajemen Persuratan Elektronik Kementerian Agama Kabupaten Barito Utara.",
+    siteName: "E-Surat Mandau Kemenag Barito Utara",
   },
   robots: {
     index: true,
@@ -62,11 +65,19 @@ export default function RootLayout({
   return (
     <html
       lang="id"
+      suppressHydrationWarning
       className={`h-full antialiased ${plusJakartaSans.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
-        <FramerProvider>{children}</FramerProvider>
-        <Toaster position="top-right" richColors closeButton />
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-slate-50 dark:bg-[#0f1117] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <FramerProvider>{children}</FramerProvider>
+          <Toaster position="top-right" richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -11,6 +11,8 @@
   --font-sans: var(--font-jakarta), system-ui, sans-serif;
 }
 
+@custom-variant dark (&:is(.dark *));
+
 body {
   background: #f8fafc;
   color: var(--foreground);

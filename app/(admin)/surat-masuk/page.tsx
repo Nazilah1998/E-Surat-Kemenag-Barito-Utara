@@ -1,11 +1,14 @@
 import { getSuratMasukAction } from "@/lib/actions/admin-persuratan";
 import { getMasterOptionsAction } from "@/lib/actions/admin-manajemen-surat";
 import { PageHeader } from "@/components/admin/page-header";
-import { SuratMasukManager, type SuratMasuk } from "@/components/admin/persuratan/surat-masuk-manager";
+import {
+  SuratMasukManager,
+  type SuratMasuk,
+} from "@/components/admin/persuratan/surat-masuk-manager";
 import { Inbox } from "lucide-react";
 
 export const metadata = {
-  title: "Surat Masuk | E-Surat",
+  title: "Surat Masuk",
 };
 
 export default async function SuratMasukPage() {

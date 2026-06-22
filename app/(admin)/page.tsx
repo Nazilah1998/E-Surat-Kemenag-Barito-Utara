@@ -73,14 +73,14 @@ export default async function DashboardPage() {
         {metrics.map((m) => (
           <div
             key={m.label}
-            className="group rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
+            className="group rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1d24] p-4 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl flex flex-col justify-between"
           >
             <div className="flex items-start justify-between mb-3 sm:mb-4">
               <div
                 className={`h-9 w-9 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl flex items-center justify-center border shadow-sm shrink-0 ${
                   m.color === "emerald"
-                    ? "bg-emerald-50 text-emerald-600 border-emerald-100/50"
-                    : "bg-violet-50 text-violet-600 border-violet-100/50"
+                    ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-100/50 dark:border-emerald-500/20"
+                    : "bg-violet-50 dark:bg-violet-500/10 text-violet-600 border-violet-100/50 dark:border-violet-500/20"
                 }`}
               >
                 <m.icon className="h-4 w-4 sm:h-6 sm:w-6" />
@@ -90,11 +90,11 @@ export default async function DashboardPage() {
               <p className="text-[9px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
                 {m.label}
               </p>
-              <p className="text-xl sm:text-3xl font-black text-slate-900 tabular-nums">
+              <p className="text-xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tabular-nums">
                 {m.value}
               </p>
             </div>
-            <div className="mt-3 h-1 w-full rounded-full bg-slate-100 overflow-hidden">
+            <div className="mt-3 h-1 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   m.color === "emerald" ? "bg-emerald-500" : "bg-violet-500"
@@ -110,21 +110,21 @@ export default async function DashboardPage() {
       {/* Recent Letters */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Surat Masuk */}
-        <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-hidden flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="rounded-2xl border border-slate-200/60 dark:border-white/5 bg-white dark:bg-[#1a1d24] shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Inbox className="h-4 w-4 text-emerald-600" />
-              <h3 className="text-sm font-bold text-slate-800">Surat Masuk Terbaru</h3>
+              <Inbox className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Surat Masuk Terbaru</h3>
             </div>
-            <Link href="/surat-masuk" className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700">
+            <Link href="/surat-masuk" className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400">
               Lihat Semua
             </Link>
           </div>
-          <div className="divide-y divide-slate-100 flex-1">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 flex-1">
             {recentSuratMasuk.length > 0 ? (
               recentSuratMasuk.map((surat) => (
-                <div key={surat.id} className="p-4 hover:bg-slate-50 transition-colors">
-                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{surat.perihal}</p>
+                <div key={surat.id} className="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{surat.perihal}</p>
                   <div className="flex items-center justify-between mt-1.5">
                     <p className="text-[10px] font-medium text-slate-500">{surat.asalSurat}</p>
                     <p className="text-[10px] font-semibold text-slate-400">
@@ -142,21 +142,21 @@ export default async function DashboardPage() {
         </div>
 
         {/* Surat Keluar */}
-        <div className="rounded-2xl border border-slate-200/60 bg-white shadow-sm overflow-hidden flex flex-col">
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="rounded-2xl border border-slate-200/60 dark:border-white/5 bg-white dark:bg-[#1a1d24] shadow-sm overflow-hidden flex flex-col">
+          <div className="px-5 py-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Send className="h-4 w-4 text-violet-600" />
-              <h3 className="text-sm font-bold text-slate-800">Surat Keluar Terbaru</h3>
+              <Send className="h-4 w-4 text-violet-600 dark:text-violet-500" />
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Surat Keluar Terbaru</h3>
             </div>
-            <Link href="/surat-keluar" className="text-[10px] font-bold text-violet-600 hover:text-violet-700">
+            <Link href="/surat-keluar" className="text-[10px] font-bold text-violet-600 dark:text-violet-500 hover:text-violet-700 dark:hover:text-violet-400">
               Lihat Semua
             </Link>
           </div>
-          <div className="divide-y divide-slate-100 flex-1">
+          <div className="divide-y divide-slate-100 dark:divide-white/5 flex-1">
             {recentSuratKeluar.length > 0 ? (
               recentSuratKeluar.map((surat) => (
-                <div key={surat.id} className="p-4 hover:bg-slate-50 transition-colors">
-                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{surat.perihal}</p>
+                <div key={surat.id} className="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{surat.perihal}</p>
                   <div className="flex items-center justify-between mt-1.5">
                     <p className="text-[10px] font-medium text-slate-500">{surat.tujuanSurat}</p>
                     <p className="text-[10px] font-semibold text-slate-400">

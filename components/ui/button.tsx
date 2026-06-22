@@ -24,13 +24,13 @@ export function Button({
         variant === "default" &&
           "bg-[#059669] text-white shadow-sm shadow-emerald-500/20 hover:bg-[#047857] hover:shadow-md hover:shadow-emerald-500/25 focus-visible:ring-[#059669] active:scale-[0.98]",
         variant === "secondary" &&
-          "bg-slate-800 text-white shadow-sm hover:bg-slate-900 focus-visible:ring-slate-800 active:scale-[0.98]",
+          "bg-slate-800 dark:bg-slate-700 text-white shadow-sm hover:bg-slate-900 dark:hover:bg-slate-600 focus-visible:ring-slate-800 active:scale-[0.98]",
         variant === "danger" &&
           "bg-red-600 text-white shadow-sm shadow-red-500/20 hover:bg-red-700 hover:shadow-md hover:shadow-red-500/25 focus-visible:ring-red-600 active:scale-[0.98]",
         variant === "outline" &&
-          "border border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-400 focus-visible:ring-slate-400 active:scale-[0.98]",
+          "border border-slate-300 dark:border-white/20 bg-white dark:bg-transparent text-slate-700 dark:text-slate-300 shadow-sm hover:bg-slate-50 dark:hover:bg-white/10 hover:border-slate-400 dark:hover:border-white/30 focus-visible:ring-slate-400 active:scale-[0.98]",
         variant === "ghost" &&
-          "text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-slate-400",
+          "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-slate-100 focus-visible:ring-slate-400",
         className,
       )}
       {...props}

@@ -64,6 +64,8 @@ export function SuratMasukManager({
 
   const [filterSuratStart, setFilterSuratStart] = useState("");
   const [filterSuratEnd, setFilterSuratEnd] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterAgenda, setFilterAgenda] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -134,9 +136,15 @@ export function SuratMasukManager({
     if (filterSuratEnd) {
       result = result.filter((item) => new Date(item.tanggal_surat) <= new Date(filterSuratEnd));
     }
+    if (filterStatus) {
+      result = result.filter((item) => item.status === filterStatus);
+    }
+    if (filterAgenda) {
+      result = result.filter((item) => item.agenda === filterAgenda);
+    }
 
     return result;
-  }, [items, debouncedSearch, filterSuratStart, filterSuratEnd]);
+  }, [items, debouncedSearch, filterSuratStart, filterSuratEnd, filterStatus, filterAgenda]);
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const paginated = filtered.slice(
@@ -285,7 +293,7 @@ export function SuratMasukManager({
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
           />
         </div>
         <div className="flex gap-2">
@@ -317,7 +325,7 @@ export function SuratMasukManager({
             exit={{ opacity: 0, y: -10, height: 0 }}
             className="z-10 relative"
           >
-            <div className="flex flex-wrap gap-4 p-4 bg-white border border-slate-200 rounded-2xl">
+            <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-2xl">
               <div className="w-48">
                 <ModernDatePicker
                   label="Dari Tgl Surat"
@@ -338,13 +346,44 @@ export function SuratMasukManager({
                   }}
                 />
               </div>
-              {(filterSuratStart || filterSuratEnd) && (
+              <div className="w-48">
+                <ModernSelect
+                  name="filterStatus"
+                  options={[{ value: "", label: "Semua Status" }, ...STATUS_OPTIONS]}
+                  value={filterStatus}
+                  onChange={(val) => {
+                    setFilterStatus(val);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Semua Status"
+                />
+              </div>
+              <div className="w-48">
+                <ModernSelect
+                  name="filterAgenda"
+                  options={[
+                    { value: "", label: "Semua Agenda" },
+                    ...initialAgendaOptions.map((opt) => ({ value: opt, label: opt })),
+                  ]}
+                  value={filterAgenda}
+                  onChange={(val) => {
+                    setFilterAgenda(val);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Semua Agenda"
+                  enableSearch
+                  searchPlaceholder="Cari agenda..."
+                />
+              </div>
+              {(filterSuratStart || filterSuratEnd || filterStatus || filterAgenda) && (
                 <button
                   onClick={() => {
                     setFilterSuratStart("");
                     setFilterSuratEnd("");
+                    setFilterStatus("");
+                    setFilterAgenda("");
                   }}
-                  className="self-end px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  className="self-end px-3 py-2 text-xs font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all h-[42px]"
                 >
                   Reset Filter
                 </button>
@@ -360,7 +399,7 @@ export function SuratMasukManager({
           <span className="font-semibold">{fetchError}</span>
           <button
             onClick={fetchData}
-            className="px-3 py-1.5 bg-red-100 hover:bg-red-200 rounded-lg text-xs font-bold transition-all"
+            className="px-3 py-1.5 bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 rounded-lg text-xs font-bold transition-all"
           >
             Muat Ulang
           </button>
@@ -376,11 +415,11 @@ export function SuratMasukManager({
 
       {/* Table */}
       {!loading && !fetchError && (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
+                <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">No</th>
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Info Surat</th>
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tgl Surat</th>
@@ -401,13 +440,13 @@ export function SuratMasukManager({
                   paginated.map((item, idx) => (
                     <tr
                       key={item.id}
-                      className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                      className="border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors"
                     >
                       <td className="px-4 py-3.5 text-xs font-bold text-slate-400">
                         {(currentPage - 1) * rowsPerPage + idx + 1}
                       </td>
                       <td className="px-4 py-3.5">
-                        <p className="text-xs font-bold text-slate-900">
+                        <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                           {item.nomor_surat}
                         </p>
                         {item.agenda && (
@@ -416,14 +455,14 @@ export function SuratMasukManager({
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3.5 text-xs font-semibold text-slate-600">
+                      <td className="px-4 py-3.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
                         {formatDate(item.tanggal_surat)}
                       </td>
-                      <td className="px-4 py-3.5 text-xs font-semibold text-slate-600">
+                      <td className="px-4 py-3.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
                         {formatDate(item.tanggal_terima)}
                       </td>
                       <td className="px-4 py-3.5">
-                        <p className="text-xs font-bold text-slate-900">
+                        <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                           {item.asal_surat}
                         </p>
                         <p className="text-[10px] text-slate-500 line-clamp-1">
@@ -437,14 +476,14 @@ export function SuratMasukManager({
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => setDetailItem(item)}
-                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all"
+                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all"
                             title="Detail"
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => openEdit(item)}
-                            className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-all"
+                            className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
                             title="Edit"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
@@ -454,7 +493,7 @@ export function SuratMasukManager({
                               setDeletingId(item.id);
                               setShowDeleteConfirm(true);
                             }}
-                            className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all"
+                            className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-all"
                             title="Hapus"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -470,18 +509,18 @@ export function SuratMasukManager({
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-white/5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
                 </span>
-                <select
+                  <select
                   value={rowsPerPage}
                   onChange={(e) => {
                     setRowsPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none"
+                  className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none"
                 >
                   {[10, 25, 50, 100, 200].map((n) => (
                     <option key={n} value={n}>{n}</option>
@@ -495,11 +534,11 @@ export function SuratMasukManager({
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Prev
                 </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-600">
+                <span className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
                   {currentPage} / {totalPages || 1}
                 </span>
                 <button
@@ -507,7 +546,7 @@ export function SuratMasukManager({
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Next
                 </button>
@@ -530,15 +569,15 @@ export function SuratMasukManager({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="w-full max-w-2xl bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                   {editingId ? "Edit Surat Masuk" : "Tambah Surat Masuk"}
                 </h2>
                 <button
                   onClick={() => setShowForm(false)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg transition-all"
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
                 >
                   <X className="h-4 w-4 text-slate-400" />
                 </button>
@@ -547,13 +586,13 @@ export function SuratMasukManager({
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Nomor Surat
                     </label>
                     <input
                       required
                       type="text"
-                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
                       placeholder="B-100/Kk.17.05/1/BA.01/01/2026"
                       value={formData.nomor_surat}
                       onChange={(e) =>
@@ -563,7 +602,7 @@ export function SuratMasukManager({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                       Status
                     </label>
                     <ModernSelect
@@ -599,7 +638,7 @@ export function SuratMasukManager({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                     Jenis Agenda
                   </label>
                     <ModernSelect
@@ -616,13 +655,13 @@ export function SuratMasukManager({
                 </div>
 
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                     Asal Surat
                   </label>
                   <input
                     required
                     type="text"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
                     placeholder="Instansi atau perorangan pengirim..."
                     value={formData.asal_surat}
                     onChange={(e) => {
@@ -642,13 +681,13 @@ export function SuratMasukManager({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                     Perihal
                   </label>
                   <textarea
                     required
                     rows={3}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none resize-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none resize-none"
                     placeholder="Perihal surat..."
                     value={formData.perihal}
                     onChange={(e) =>
@@ -658,12 +697,12 @@ export function SuratMasukManager({
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Lampiran <span className="text-slate-400 font-normal lowercase">(opsional)</span>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                    Lampiran <span className="text-slate-400 dark:text-slate-500 font-normal lowercase">(opsional)</span>
                   </label>
                   <label 
-                    className={`flex items-center gap-3 px-4 py-3 bg-slate-50 border border-dashed rounded-xl cursor-pointer transition-all
-                      ${isDraggingFile ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-300 hover:border-emerald-300 hover:bg-emerald-50/30'}
+                    className={`flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-black/20 border border-dashed rounded-xl cursor-pointer transition-all
+                      ${isDraggingFile ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-500/10' : 'border-slate-300 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:bg-emerald-50/30 dark:hover:bg-emerald-500/5'}
                     `}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -678,8 +717,8 @@ export function SuratMasukManager({
                       }
                     }}
                   >
-                    <Upload className={`h-4 w-4 ${isDraggingFile ? 'text-emerald-500' : 'text-slate-400'}`} />
-                    <span className={`text-xs font-semibold ${isDraggingFile ? 'text-emerald-600' : 'text-slate-500'}`}>
+                    <Upload className={`h-4 w-4 ${isDraggingFile ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                    <span className={`text-xs font-semibold ${isDraggingFile ? 'text-emerald-600' : 'text-slate-500 dark:text-slate-400'}`}>
                       {lampiranFile
                         ? lampiranFile.name
                         : isDraggingFile ? "Lepaskan file di sini" : "Klik atau seret file ke sini"}
@@ -696,10 +735,10 @@ export function SuratMasukManager({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                 <button
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-all"
                 >
                   Batal
                 </button>
@@ -732,15 +771,15 @@ export function SuratMasukManager({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200"
+              className="w-full max-w-lg bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                   Detail Surat Masuk
                 </h2>
                 <button
                   onClick={() => setDetailItem(null)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg transition-all"
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
                 >
                   <X className="h-4 w-4 text-slate-400" />
                 </button>
@@ -752,7 +791,7 @@ export function SuratMasukManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                       Nomor Surat
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {detailItem.nomor_surat}
                     </p>
                   </div>
@@ -764,7 +803,7 @@ export function SuratMasukManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                       Tanggal Surat
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {formatDate(detailItem.tanggal_surat)}
                     </p>
                   </div>
@@ -772,7 +811,7 @@ export function SuratMasukManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                       Tanggal Terima
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {formatDate(detailItem.tanggal_terima)}
                     </p>
                   </div>
@@ -783,7 +822,7 @@ export function SuratMasukManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                       Jenis Agenda
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {detailItem.agenda}
                     </p>
                   </div>
@@ -793,7 +832,7 @@ export function SuratMasukManager({
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Asal Surat
                   </p>
-                  <p className="text-sm font-bold text-slate-900">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
                     {detailItem.asal_surat}
                   </p>
                 </div>
@@ -802,7 +841,7 @@ export function SuratMasukManager({
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Perihal
                   </p>
-                  <p className="text-sm text-slate-700">{detailItem.perihal}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">{detailItem.perihal}</p>
                 </div>
 
                 {detailItem.lampiran && (
@@ -814,7 +853,7 @@ export function SuratMasukManager({
                       href={detailItem.lampiran}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-all mt-1"
+                      className="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-all mt-1"
                     >
                       <FileText className="h-3.5 w-3.5" />
                       Lihat Lampiran
@@ -823,10 +862,10 @@ export function SuratMasukManager({
                 )}
               </div>
 
-              <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                 <button
                   onClick={() => setDetailItem(null)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-all"
                 >
                   Tutup
                 </button>

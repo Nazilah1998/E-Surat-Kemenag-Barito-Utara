@@ -91,10 +91,10 @@ export function AdminSidebar({
         </div>
         {!collapsed && (
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white/90 truncate">
-              E-Surat Digital
+            <p className="text-[15px] font-black text-white tracking-wide truncate">
+              E-SURAT MANDAU
             </p>
-            <p className="text-[10px] font-semibold text-white/30 truncate leading-tight">
+            <p className="text-[9px] font-bold text-emerald-400/90 uppercase tracking-[0.05em] truncate leading-tight">
               Kemenag Barito Utara
             </p>
           </div>
@@ -119,25 +119,35 @@ export function AdminSidebar({
                       key={item.href}
                       href={item.href}
                       onClick={onLinkClick}
-                      className={`group/link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative ${
+                      className={`group/link flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-bold transition-all duration-300 relative overflow-hidden ${
                         isActive
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : "text-white/60 hover:bg-white/10 hover:text-white"
+                          ? "text-emerald-400 shadow-sm ring-1 ring-emerald-500/20 bg-emerald-500/10"
+                          : "text-white/60 hover:text-white hover:translate-x-1"
                       }`}
                       title={collapsed ? item.label : undefined}
                     >
+                      {/* Hover Background Animation */}
+                      {!isActive && (
+                        <div className="absolute inset-0 bg-white/5 translate-y-full group-hover/link:translate-y-0 transition-transform duration-300 ease-out rounded-xl z-0" />
+                      )}
+
+                      {/* Active Indicator Bar */}
+                      {isActive && !collapsed && (
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-3/4 bg-emerald-400 rounded-r-full shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                      )}
+                      
                       <item.icon
-                        className={`h-4 w-4 shrink-0 ${
+                        className={`h-5 w-5 shrink-0 transition-transform duration-300 relative z-10 ${
                           isActive
-                            ? "text-emerald-400"
-                            : "text-white/40 group-hover/link:text-white/60"
+                            ? "text-emerald-400 scale-110 drop-shadow-md"
+                            : "text-white/40 group-hover/link:text-emerald-400/80 group-hover/link:scale-110"
                         }`}
                       />
                       {!collapsed && (
                         <>
-                          <span className="truncate">{item.label}</span>
+                          <span className="truncate relative z-10 tracking-wide">{item.label}</span>
                           {isActive && (
-                            <ChevronRight className="h-3.5 w-3.5 ml-auto text-emerald-400 shrink-0" />
+                            <ChevronRight className="h-4 w-4 ml-auto text-emerald-400 shrink-0 relative z-10 drop-shadow-md" />
                           )}
                         </>
                       )}

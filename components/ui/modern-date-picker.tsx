@@ -66,21 +66,21 @@ export function ModernDatePicker({
   };
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5">
       <button
         type="button"
         onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-        className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors text-slate-500"
+        className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
-      <span className="text-sm font-bold text-slate-900 capitalize">
+      <span className="text-sm font-bold text-slate-900 dark:text-slate-100 capitalize">
         {format(currentMonth, "MMMM yyyy", { locale: id })}
       </span>
       <button
         type="button"
         onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-        className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors text-slate-500"
+        className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
       >
         <ChevronRight className="h-4 w-4" />
       </button>
@@ -94,7 +94,7 @@ export function ModernDatePicker({
         {days.map((day, idx) => (
           <div
             key={day}
-            className={`text-[10px] font-extrabold uppercase text-center py-2 ${idx === 0 ? "text-red-500" : "text-slate-400"}`}
+            className={`text-[10px] font-extrabold uppercase text-center py-2 ${idx === 0 ? "text-red-500" : "text-slate-400 dark:text-slate-500"}`}
           >
             {day}
           </div>
@@ -129,14 +129,14 @@ export function ModernDatePicker({
             onClick={() => handleDateClick(currentDay)}
             className={`h-9 w-9 flex items-center justify-center text-xs font-bold rounded-xl cursor-pointer transition-all ${
               !isCurrentMonth
-                ? "text-slate-200"
+                ? "text-slate-200 dark:text-slate-700"
                 : isSelected
-                  ? "bg-[#059669] text-white shadow-lg shadow-emerald-200 scale-110"
+                  ? "bg-[#059669] text-white shadow-lg shadow-emerald-200 dark:shadow-none scale-110"
                   : isToday
-                    ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500 font-extrabold"
+                    ? "bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-500 font-extrabold"
                   : isSunday
-                    ? "text-red-500 hover:bg-red-50 hover:text-red-600 font-extrabold"
-                    : "text-slate-700 hover:bg-emerald-50 hover:text-emerald-600"
+                    ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-400 font-extrabold"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-500/20 hover:text-emerald-600 dark:hover:text-emerald-400"
             }`}
           >
             {format(currentDay, "d")}
@@ -157,7 +157,7 @@ export function ModernDatePicker({
   return (
     <div className="relative w-full" ref={containerRef}>
       {label && (
-        <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1 mb-1.5 block">
+        <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1 mb-1.5 block">
           {label}
         </label>
       )}
@@ -171,17 +171,17 @@ export function ModernDatePicker({
           }
           setIsOpen(!isOpen);
         }}
-        className={`group flex items-center gap-3 w-full px-4 py-2.5 bg-slate-50 border rounded-xl text-sm transition-all cursor-pointer ${
+        className={`group flex items-center gap-3 w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 border rounded-xl text-sm transition-all cursor-pointer ${
           isOpen
             ? "border-emerald-500 ring-2 ring-emerald-500/10"
-            : "border-slate-200 hover:border-slate-300"
+            : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
         }`}
       >
         <CalendarIcon
-          className={`h-4 w-4 transition-colors ${isOpen ? "text-emerald-500" : "text-slate-400 group-hover:text-slate-500"}`}
+          className={`h-4 w-4 transition-colors ${isOpen ? "text-emerald-500" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-500 dark:group-hover:text-slate-400"}`}
         />
         <span
-          className={`flex-1 font-semibold text-left ${value ? "text-slate-900" : "text-slate-400"}`}
+          className={`flex-1 font-semibold text-left ${value ? "text-slate-900 dark:text-slate-100" : "text-slate-400 dark:text-slate-500"}`}
         >
           {value
             ? format(new Date(value), "dd MMMM yyyy", { locale: id })
@@ -193,9 +193,9 @@ export function ModernDatePicker({
               e.stopPropagation();
               onChange("");
             }}
-            className="p-1 hover:bg-slate-200 rounded-full transition-colors"
+            className="p-1 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors"
           >
-            <X className="h-3 w-3 text-slate-400" />
+            <X className="h-3 w-3 text-slate-400 dark:text-slate-500" />
           </div>
         )}
       </button>
@@ -207,24 +207,24 @@ export function ModernDatePicker({
             animate={{ opacity: 1, y: 5, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute z-[100] mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
+            className="absolute z-[100] mt-2 w-72 bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-100 dark:border-white/10 overflow-hidden"
           >
             {renderHeader()}
             <div className="p-2">
               {renderDays()}
               {renderCells()}
-              <div className="mt-2 p-2 border-t border-slate-50 flex items-center justify-between">
+              <div className="mt-2 p-2 border-t border-slate-50 dark:border-white/5 flex items-center justify-between">
                 <button
                   type="button"
                   onClick={() => handleDateClick(new Date())}
-                  className="px-3 py-1.5 text-[10px] font-bold text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                  className="px-3 py-1.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/20 rounded-lg transition-all"
                 >
                   Hari Ini
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-3 py-1.5 text-[10px] font-bold text-slate-400 hover:bg-slate-50 rounded-lg transition-all"
+                  className="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-white/10 rounded-lg transition-all"
                 >
                   Tutup
                 </button>

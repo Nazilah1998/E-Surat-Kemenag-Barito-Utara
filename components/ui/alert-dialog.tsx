@@ -31,22 +31,22 @@ export function AlertDialog({
 }: AlertDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-100 overflow-hidden p-6">
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-[#1a1d24] shadow-2xl border border-slate-100 dark:border-white/10 overflow-hidden p-6">
         <div className="flex flex-col items-center text-center gap-3">
           <div
             className={cn(
               "h-12 w-12 rounded-2xl flex items-center justify-center border",
-              variant === "danger" && "bg-red-50 text-red-600 border-red-100",
-              variant === "warning" && "bg-amber-50 text-amber-600 border-amber-100",
-              variant === "info" && "bg-emerald-50 text-emerald-600 border-emerald-100",
+              variant === "danger" && "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-100 dark:border-red-500/20",
+              variant === "warning" && "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-500/20",
+              variant === "info" && "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20",
             )}
           >
             {variant === "danger" && <AlertTriangle className="h-6 w-6" />}
             {variant === "warning" && <ShieldAlert className="h-6 w-6" />}
             {variant === "info" && <Info className="h-6 w-6" />}
           </div>
-          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-          <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{description}</p>
         </div>
 
         <div className="flex items-center gap-3 mt-6">

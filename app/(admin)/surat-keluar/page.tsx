@@ -1,12 +1,15 @@
 import { getSuratKeluarAction } from "@/lib/actions/admin-persuratan";
 import { getMasterOptionsAction } from "@/lib/actions/admin-manajemen-surat";
 import { PageHeader } from "@/components/admin/page-header";
-import { SuratKeluarManager, type SuratKeluar } from "@/components/admin/persuratan/surat-keluar-manager";
+import {
+  SuratKeluarManager,
+  type SuratKeluar,
+} from "@/components/admin/persuratan/surat-keluar-manager";
 import { BADGE_COLOR_MAP } from "@/lib/constants";
 import { Send } from "lucide-react";
 
 export const metadata = {
-  title: "Surat Keluar | E-Surat",
+  title: "Surat Keluar",
 };
 
 export default async function SuratKeluarPage() {
@@ -16,17 +19,29 @@ export default async function SuratKeluarPage() {
     getMasterOptionsAction("unit_kerja"),
   ]);
 
-  const agendaData = (agendaRes.success ? (agendaRes.data as { label: string; warna: string }[]) : []) as { label: string; warna: string }[];
-  const unitKerjaData = (unitKerjaRes.success ? (unitKerjaRes.data as { label: string; warna: string }[]) : []) as { label: string; warna: string }[];
+  const agendaData = (
+    agendaRes.success
+      ? (agendaRes.data as { label: string; warna: string }[])
+      : []
+  ) as { label: string; warna: string }[];
+  const unitKerjaData = (
+    unitKerjaRes.success
+      ? (unitKerjaRes.data as { label: string; warna: string }[])
+      : []
+  ) as { label: string; warna: string }[];
 
   const agendaOptions = agendaData.map((o) => o.label);
   const unitKerjaOptions = unitKerjaData.map((o) => o.label);
 
   const agendaColors: Record<string, string> = {};
-  agendaData.forEach((o) => { agendaColors[o.label] = o.warna; });
+  agendaData.forEach((o) => {
+    agendaColors[o.label] = o.warna;
+  });
 
   const unitKerjaColors: Record<string, string> = {};
-  unitKerjaData.forEach((o) => { unitKerjaColors[o.label] = o.warna; });
+  unitKerjaData.forEach((o) => {
+    unitKerjaColors[o.label] = o.warna;
+  });
 
   return (
     <div className="space-y-6">

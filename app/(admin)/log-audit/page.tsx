@@ -1,10 +1,13 @@
 import { getAuditLogsAction } from "@/lib/actions/admin-audit";
 import { PageHeader } from "@/components/admin/page-header";
-import { LogAuditManager, type AuditLog } from "@/components/admin/log-audit-manager";
+import {
+  LogAuditManager,
+  type AuditLog,
+} from "@/components/admin/log-audit-manager";
 import { History } from "lucide-react";
 
 export const metadata = {
-  title: "Log Audit | E-Surat",
+  title: "Log Audit",
 };
 
 export default async function LogAuditPage() {

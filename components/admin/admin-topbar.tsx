@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { User, Menu, ChevronDown, LogOut, ShieldCheck, KeyRound } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { m, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -230,33 +231,37 @@ export function AdminTopbar({
 
   return (
     <>
-      <header className="h-16 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 lg:px-6 shrink-0">
+      <header className="h-16 bg-white dark:bg-[#0f1117] border-b border-slate-200/80 dark:border-white/5 flex items-center justify-between px-4 lg:px-6 shrink-0 transition-colors duration-300">
         <button
           onClick={onToggleSidebar}
-          className="p-2 rounded-xl hover:bg-slate-100 text-slate-500 transition-all lg:hidden"
+          className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 transition-all lg:hidden"
         >
           <Menu className="h-5 w-5" />
         </button>
 
         {/* Breadcrumb area */}
-        <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-400">
+        <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500">
           <ShieldCheck className="h-4 w-4 text-emerald-500" />
-          <span className="text-slate-600">Panel Admin</span>
+          <span className="text-slate-600 dark:text-slate-300">Panel Admin</span>
         </div>
 
-        {/* User dropdown */}
-        <div className="relative" ref={dropdownRef}>
-          <button
+        {/* Right side actions */}
+        <div className="flex items-center gap-2 lg:gap-4">
+          <ThemeToggle />
+          
+          {/* User dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
             type="button"
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 transition-all"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
           >
-            <div className="h-8 w-8 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-sm overflow-hidden shrink-0 p-1">
+            <div className="h-8 w-8 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20 shadow-sm overflow-hidden shrink-0 p-1">
               <Image src="/kemenag.svg" alt="Avatar" width={24} height={24} className="object-contain" />
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-bold text-slate-800 leading-tight">{userName}</p>
-              <p className="text-[10px] font-semibold text-slate-400">{userEmail}</p>
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">{userName}</p>
+              <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">{userEmail}</p>
             </div>
             <ChevronDown
               className={`h-4 w-4 text-slate-400 transition-transform ${
@@ -272,17 +277,17 @@ export function AdminTopbar({
                 animate={{ opacity: 1, y: 5, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50"
+                className="absolute right-0 mt-2 w-72 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1d24] p-2 shadow-xl z-50"
               >
                 {/* User info */}
-                <div className="px-3 py-3 border-b border-slate-100">
+                <div className="px-3 py-3 border-b border-slate-100 dark:border-white/5">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100 shrink-0 p-1.5">
+                    <div className="h-10 w-10 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20 shrink-0 p-1.5">
                       <Image src="/kemenag.svg" alt="Avatar" width={32} height={32} className="object-contain" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900 truncate">{userName}</p>
-                      <p className="text-[11px] font-medium text-slate-400 flex items-center gap-1 w-full overflow-hidden">
+                      <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{userName}</p>
+                      <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 flex items-center gap-1 w-full overflow-hidden">
                         <ShieldCheck className="h-3 w-3 text-emerald-500 shrink-0" />
                         <span className="truncate">{userEmail}</span>
                       </p>
@@ -298,9 +303,9 @@ export function AdminTopbar({
                       setDropdownOpen(false);
                       setShowEditProfile(true);
                     }}
-                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all"
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all"
                   >
-                    <User className="h-4 w-4 text-slate-400" />
+                    <User className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                     Edit Profil
                   </button>
                   <button
@@ -309,15 +314,15 @@ export function AdminTopbar({
                       setDropdownOpen(false);
                       setShowChangePassword(true);
                     }}
-                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all"
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white transition-all"
                   >
-                    <KeyRound className="h-4 w-4 text-slate-400" />
+                    <KeyRound className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                     Ubah Password
                   </button>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all"
+                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
                   >
                     <LogOut className="h-4 w-4" />
                     Keluar Sesi
@@ -326,6 +331,7 @@ export function AdminTopbar({
               </m.div>
             )}
           </AnimatePresence>
+        </div>
         </div>
       </header>
 

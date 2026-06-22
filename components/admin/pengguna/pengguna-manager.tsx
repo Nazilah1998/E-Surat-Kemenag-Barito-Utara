@@ -321,7 +321,7 @@ export function PenggunaManager({
             }}
             autoComplete="new-password"
             spellCheck="false"
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
           />
         </div>
         <div className="flex gap-2">
@@ -353,7 +353,7 @@ export function PenggunaManager({
             exit={{ opacity: 0, y: -10, height: 0 }}
             className="z-10 relative"
           >
-            <div className="flex flex-wrap gap-4 p-4 bg-white border border-slate-200 rounded-2xl">
+            <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-2xl">
               <div className="space-y-1.5">
                 <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1">
                   Status
@@ -366,7 +366,7 @@ export function PenggunaManager({
                     );
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+                  className="px-3 py-2 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                 >
                   <option value="all">Semua</option>
                   <option value="active">Aktif</option>
@@ -376,7 +376,7 @@ export function PenggunaManager({
               {statusFilter !== "all" && (
                 <button
                   onClick={() => setStatusFilter("all")}
-                  className="self-end px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  className="self-end px-3 py-2 text-xs font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
                 >
                   Reset Filter
                 </button>
@@ -388,11 +388,11 @@ export function PenggunaManager({
 
       {/* Error State */}
       {fetchError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600 flex items-center justify-between">
+        <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl text-sm text-red-600 dark:text-red-400 flex items-center justify-between">
           <span className="font-semibold">{fetchError}</span>
           <button
             onClick={fetchData}
-            className="px-3 py-1.5 bg-red-100 hover:bg-red-200 rounded-lg text-xs font-bold transition-all"
+            className="px-3 py-1.5 bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 rounded-lg text-xs font-bold transition-all"
           >
             Muat Ulang
           </button>
@@ -408,11 +408,11 @@ export function PenggunaManager({
 
       {/* Table */}
       {!loading && !fetchError && (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
+                <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">
                     No
                   </th>
@@ -449,27 +449,27 @@ export function PenggunaManager({
                     return (
                       <tr
                         key={item.id}
-                        className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                        className="border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors"
                       >
                         <td className="px-4 py-3.5 text-xs font-bold text-slate-400">
                           {(currentPage - 1) * rowsPerPage + idx + 1}
                         </td>
                         <td className="px-4 py-3.5">
-                          <p className="text-xs font-bold text-slate-900">
+                          <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                             {item.nama}
                           </p>
-                          <p className="text-[10px] font-semibold text-slate-400">
+                          <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                             {item.email}
                           </p>
                         </td>
                         <td className="px-4 py-3.5">
                           {isSuper ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200/50 text-[10px] font-extrabold text-amber-700 uppercase tracking-wider">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/20 text-[10px] font-extrabold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                               <ShieldCheck className="h-3 w-3" />
                               Super Admin
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200/50 text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/50 dark:border-emerald-500/20 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
                               <UserCog className="h-3 w-3" />
                               Admin Surat
                             </span>
@@ -479,8 +479,8 @@ export function PenggunaManager({
                           <span
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider ${
                               item.isActive
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200/50"
-                                : "bg-red-50 text-red-700 border border-red-200/50"
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-500/20"
+                                : "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200/50 dark:border-red-500/20"
                             }`}
                           >
                             <span
@@ -491,7 +491,7 @@ export function PenggunaManager({
                             {item.isActive ? "Aktif" : "Nonaktif"}
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 text-xs font-semibold text-slate-500">
+                        <td className="px-4 py-3.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
                           {item.lastLoginAt
                             ? new Date(item.lastLoginAt).toLocaleString("id-ID")
                             : "-"}
@@ -504,8 +504,8 @@ export function PenggunaManager({
                                 disabled={submitting}
                                 className={`p-1.5 rounded-lg transition-all ${
                                   item.isActive
-                                    ? "hover:bg-red-50 text-slate-400 hover:text-red-500"
-                                    : "hover:bg-emerald-50 text-slate-400 hover:text-emerald-600"
+                                    ? "hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400"
+                                    : "hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400"
                                 }`}
                                 title={
                                   item.isActive ? "Nonaktifkan" : "Aktifkan"
@@ -520,7 +520,7 @@ export function PenggunaManager({
                             )}
                             <button
                               onClick={() => openEdit(item)}
-                              className="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-all"
+                              className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
                               title="Edit"
                             >
                               <Edit2 className="h-3.5 w-3.5" />
@@ -532,7 +532,7 @@ export function PenggunaManager({
                                   setResetPasswordValue("");
                                   setShowResetPassword(true);
                                 }}
-                                className="p-1.5 rounded-lg hover:bg-amber-50 text-slate-400 hover:text-amber-600 transition-all"
+                                className="p-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-500/10 text-slate-400 dark:text-slate-500 hover:text-amber-600 dark:hover:text-amber-400 transition-all"
                                 title="Reset Password"
                               >
                                 <KeyRound className="h-3.5 w-3.5" />
@@ -540,7 +540,7 @@ export function PenggunaManager({
                             )}
                             <button
                               onClick={() => openRiwayat(item)}
-                              className="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-all"
+                              className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
                               title="Riwayat Aktivitas"
                             >
                               <History className="h-3.5 w-3.5" />
@@ -557,7 +557,7 @@ export function PenggunaManager({
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-white/5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
@@ -568,7 +568,7 @@ export function PenggunaManager({
                     setRowsPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none"
+                  className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none"
                 >
                   {[10, 25, 50, 100, 200].map((n) => (
                     <option key={n} value={n}>
@@ -584,11 +584,11 @@ export function PenggunaManager({
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Prev
                 </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-600">
+                <span className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
                   {currentPage} / {totalPages || 1}
                 </span>
                 <button
@@ -596,7 +596,7 @@ export function PenggunaManager({
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Next
                 </button>
@@ -619,10 +619,10 @@ export function PenggunaManager({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="w-full max-w-lg bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                   {editingId ? "Edit Pengguna" : "Tambah Pengguna"}
                 </h2>
                 <button
@@ -635,13 +635,13 @@ export function PenggunaManager({
 
               <div className="p-6 space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                     Nama
                   </label>
                   <input
                     required
                     type="text"
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
                     placeholder="Nama lengkap"
                     value={formData.nama}
                     onChange={(e) =>
@@ -653,13 +653,13 @@ export function PenggunaManager({
                 {!editingId && (
                   <>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         Email
                       </label>
                       <input
                         required
                         type="email"
-                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
                         placeholder="admin@kemenag.go.id"
                         value={formData.email}
                         onChange={(e) =>
@@ -669,7 +669,7 @@ export function PenggunaManager({
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         Password
                       </label>
                       <div className="relative">
@@ -677,7 +677,7 @@ export function PenggunaManager({
                           required
                           type={showPassword ? "text" : "password"}
                           minLength={6}
-                          className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                          className="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
                           placeholder="Minimal 6 karakter"
                           value={formData.password}
                           onChange={(e) =>
@@ -690,7 +690,7 @@ export function PenggunaManager({
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -705,7 +705,7 @@ export function PenggunaManager({
 
                 {editingId && (
                   <div className="flex items-center gap-3 pt-2">
-                    <span className="text-xs font-bold text-slate-700">
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       Status Akun
                     </span>
                     <button
@@ -717,7 +717,7 @@ export function PenggunaManager({
                         })
                       }
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        formData.isActive ? "bg-emerald-500" : "bg-slate-300"
+                        formData.isActive ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"
                       }`}
                     >
                       <span
@@ -726,17 +726,17 @@ export function PenggunaManager({
                         }`}
                       />
                     </button>
-                    <span className="text-xs font-semibold text-slate-500">
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                       {formData.isActive ? "Aktif" : "Nonaktif"}
                     </span>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                 <button
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-all"
                 >
                   Batal
                 </button>
@@ -769,18 +769,18 @@ export function PenggunaManager({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200"
+              className="w-full max-w-md bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center">
-                    <KeyRound className="h-4 w-4 text-amber-600" />
+                  <div className="h-9 w-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                    <KeyRound className="h-4 w-4 text-amber-600 dark:text-amber-500" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-bold text-slate-900">
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                       Reset Password
                     </h2>
-                    <p className="text-[10px] font-semibold text-slate-400">
+                    <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                       Masukkan password baru untuk akun ini
                     </p>
                   </div>
@@ -790,15 +790,15 @@ export function PenggunaManager({
                     setShowResetPassword(false);
                     setResetPasswordId(null);
                   }}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg transition-all"
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
                 >
-                  <X className="h-4 w-4 text-slate-400" />
+                  <X className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                 </button>
               </div>
 
               <div className="p-6 space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                     Password Baru
                   </label>
                   <div className="relative">
@@ -806,7 +806,7 @@ export function PenggunaManager({
                       type={showResetPasswordText ? "text" : "password"}
                       required
                       minLength={6}
-                      className="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+                      className="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
                       placeholder="Minimal 6 karakter"
                       value={resetPasswordValue}
                       onChange={(e) => setResetPasswordValue(e.target.value)}
@@ -816,7 +816,7 @@ export function PenggunaManager({
                       onClick={() =>
                         setShowResetPasswordText(!showResetPasswordText)
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
                     >
                       {showResetPasswordText ? (
                         <EyeOff className="h-4 w-4" />
@@ -828,13 +828,13 @@ export function PenggunaManager({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                 <button
                   onClick={() => {
                     setShowResetPassword(false);
                     setResetPasswordId(null);
                   }}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-all"
                 >
                   Batal
                 </button>
@@ -867,27 +867,27 @@ export function PenggunaManager({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="w-full max-w-2xl bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
                 <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center">
-                    <History className="h-4 w-4 text-blue-600" />
+                  <div className="h-9 w-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                    <History className="h-4 w-4 text-blue-600 dark:text-blue-500" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-bold text-slate-900">
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                       Riwayat Aktivitas
                     </h2>
-                    <p className="text-[10px] font-semibold text-slate-400">
+                    <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">
                       {riwayatUserName}
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowRiwayat(false)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg transition-all"
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
                 >
-                  <X className="h-4 w-4 text-slate-400" />
+                  <X className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                 </button>
               </div>
 
@@ -898,8 +898,8 @@ export function PenggunaManager({
                   </div>
                 ) : riwayatData.length === 0 ? (
                   <div className="text-center py-12">
-                    <History className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                    <p className="text-sm font-semibold text-slate-400">
+                    <History className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+                    <p className="text-sm font-semibold text-slate-400 dark:text-slate-500">
                       Belum ada aktivitas
                     </p>
                   </div>
@@ -908,13 +908,13 @@ export function PenggunaManager({
                     {riwayatData.map((log) => (
                       <div
                         key={log.id}
-                        className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100"
+                        className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
                       >
-                        <div className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
-                          <Eye className="h-3.5 w-3.5 text-slate-400" />
+                        <div className="h-8 w-8 rounded-lg bg-white dark:bg-black/20 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0">
+                          <Eye className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-800">
+                          <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
                             {ACTION_LABELS[log.action] || log.action}
                           </p>
                           {log.details && (
@@ -944,10 +944,10 @@ export function PenggunaManager({
                 )}
               </div>
 
-              <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                 <button
                   onClick={() => setShowRiwayat(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-all"
                 >
                   Tutup
                 </button>

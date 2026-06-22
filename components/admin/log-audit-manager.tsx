@@ -150,13 +150,13 @@ export function LogAuditManager({
   const getActionColor = (action: string) => {
     switch (action.toUpperCase()) {
       case "CREATE":
-        return "bg-emerald-50 text-emerald-600 border-emerald-200";
+        return "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20";
       case "UPDATE":
-        return "bg-blue-50 text-blue-600 border-blue-200";
+        return "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20";
       case "DELETE":
-        return "bg-red-50 text-red-600 border-red-200";
+        return "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20";
       default:
-        return "bg-slate-50 text-slate-600 border-slate-200";
+        return "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10";
     }
   };
 
@@ -187,7 +187,7 @@ export function LogAuditManager({
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none"
           />
         </div>
         <div className="flex gap-2">
@@ -215,7 +215,7 @@ export function LogAuditManager({
             exit={{ opacity: 0, y: -10, height: 0 }}
             className="z-10 relative"
           >
-            <div className="flex flex-wrap gap-4 p-4 bg-white border border-slate-200 rounded-2xl">
+            <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-2xl">
               <div className="w-48">
                 <ModernDatePicker
                   label="Dari Tanggal"
@@ -266,7 +266,7 @@ export function LogAuditManager({
                     setFilterAction("");
                     setFilterEntity("");
                   }}
-                  className="self-end px-3 py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                  className="self-end px-3 py-2 text-xs font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
                 >
                   Reset Filter
                 </button>
@@ -278,11 +278,11 @@ export function LogAuditManager({
 
       {/* Error State */}
       {fetchError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600 flex items-center justify-between">
+        <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl text-sm text-red-600 dark:text-red-400 flex items-center justify-between">
           <span className="font-semibold">{fetchError}</span>
           <button
             onClick={fetchData}
-            className="px-3 py-1.5 bg-red-100 hover:bg-red-200 rounded-lg text-xs font-bold transition-all"
+            className="px-3 py-1.5 bg-red-100 dark:bg-red-500/20 hover:bg-red-200 dark:hover:bg-red-500/30 rounded-lg text-xs font-bold transition-all"
           >
             Muat Ulang
           </button>
@@ -298,11 +298,11 @@ export function LogAuditManager({
 
       {/* Table */}
       {!loading && !fetchError && (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
+                <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">No</th>
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Waktu</th>
                   <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Admin</th>
@@ -322,24 +322,24 @@ export function LogAuditManager({
                   paginated.map((item, idx) => (
                     <tr
                       key={item.id}
-                      className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                      className="border-b border-slate-50 dark:border-white/5 hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors"
                     >
                       <td className="px-4 py-3.5 text-xs font-bold text-slate-400">
                         {(currentPage - 1) * rowsPerPage + idx + 1}
                       </td>
                       <td className="px-4 py-3.5">
-                        <div className="text-xs font-bold text-slate-900">
+                        <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
                           {new Date(item.createdAt).toLocaleDateString("id-ID")}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-semibold">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
                           {new Date(item.createdAt).toLocaleTimeString("id-ID")}
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
-                        <p className="text-xs font-bold text-slate-900">
+                        <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                           {item.adminEmail || "Sistem"}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-mono">
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                           {item.adminId.slice(0, 8)}...
                         </p>
                       </td>
@@ -352,19 +352,19 @@ export function LogAuditManager({
                           >
                             {item.action}
                           </span>
-                          <span className="text-xs font-semibold text-slate-600">
+                          <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                             {item.entityType}
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-xs font-mono text-slate-500">
+                      <td className="px-4 py-3.5 text-xs font-mono text-slate-500 dark:text-slate-400">
                         {item.ipAddress}
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center justify-center">
                           <button
                             onClick={() => setDetailItem(item)}
-                            className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-all"
+                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all"
                             title="Lihat Data Detail"
                           >
                             <Eye className="h-4 w-4" />
@@ -380,7 +380,7 @@ export function LogAuditManager({
 
           {/* Pagination */}
           {filtered.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-100 dark:border-white/5 bg-slate-50/30 dark:bg-white/5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
@@ -391,7 +391,7 @@ export function LogAuditManager({
                     setRowsPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none"
+                  className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none"
                 >
                   {[10, 25, 50, 100, 200].map((n) => (
                     <option key={n} value={n}>{n}</option>
@@ -405,11 +405,11 @@ export function LogAuditManager({
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Prev
                 </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-600">
+                <span className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
                   {currentPage} / {totalPages || 1}
                 </span>
                 <button
@@ -417,7 +417,7 @@ export function LogAuditManager({
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Next
                 </button>
@@ -440,17 +440,17 @@ export function LogAuditManager({
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]"
+              className="w-full max-w-lg bg-white dark:bg-[#1a1d24] rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col max-h-[85vh]"
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <h2 className="text-sm font-bold text-slate-900">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/5">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                   Detail Log Audit
                 </h2>
                 <button
                   onClick={() => setDetailItem(null)}
-                  className="p-1.5 hover:bg-slate-100 rounded-lg transition-all"
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-all"
                 >
-                  <X className="h-4 w-4 text-slate-400" />
+                  <X className="h-4 w-4 text-slate-400 dark:text-slate-500" />
                 </button>
               </div>
 
@@ -460,7 +460,7 @@ export function LogAuditManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
                       Waktu
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {new Date(detailItem.createdAt).toLocaleString("id-ID")}
                     </p>
                   </div>
@@ -468,7 +468,7 @@ export function LogAuditManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
                       IP Address
                     </p>
-                    <p className="text-sm font-bold text-slate-900 font-mono">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white font-mono">
                       {detailItem.ipAddress || "-"}
                     </p>
                   </div>
@@ -478,10 +478,10 @@ export function LogAuditManager({
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
                     Admin
                   </p>
-                  <p className="text-sm font-bold text-slate-900">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
                     {detailItem.adminEmail || "Sistem"}
                   </p>
-                  <p className="text-[10px] text-slate-500 font-mono">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                     {detailItem.adminId}
                   </p>
                 </div>
@@ -503,10 +503,10 @@ export function LogAuditManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
                       Entitas
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">
                       {detailItem.entityType}
                     </p>
-                    <p className="text-[10px] text-slate-500 font-mono break-all">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-mono break-all">
                       {detailItem.entityId}
                     </p>
                   </div>
@@ -517,17 +517,17 @@ export function LogAuditManager({
                     <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">
                       Payload / Detail Data
                     </p>
-                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 overflow-x-auto text-xs font-mono text-slate-700">
+                    <div className="bg-slate-50 dark:bg-black/20 p-4 rounded-xl border border-slate-100 dark:border-white/5 overflow-x-auto text-xs font-mono text-slate-700 dark:text-slate-300">
                       <pre>{JSON.stringify(detailItem.details, null, 2)}</pre>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 bg-slate-50/50 shrink-0">
+              <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 shrink-0">
                 <button
                   onClick={() => setDetailItem(null)}
-                  className="px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-all"
                 >
                   Tutup
                 </button>
