@@ -29,6 +29,13 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/badge";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 
+const getPaginationRange = (current: number, total: number) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
+  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "...", current - 1, current, current + 1, "...", total];
+};
+
 export interface SuratMasuk {
   id: string;
   nomor_surat: string;
@@ -43,11 +50,9 @@ export interface SuratMasuk {
 
 export function SuratMasukManager({
   initialData = [],
-  initialAgendaOptions = [],
 }: {
   initialData?: SuratMasuk[];
   initialTotal?: number;
-  initialAgendaOptions?: string[];
 }) {
   const [items, setItems] = useState<SuratMasuk[]>(initialData);
   const [loading, setLoading] = useState(false);
@@ -65,7 +70,6 @@ export function SuratMasukManager({
   const [filterSuratStart, setFilterSuratStart] = useState("");
   const [filterSuratEnd, setFilterSuratEnd] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterAgenda, setFilterAgenda] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -131,20 +135,28 @@ export function SuratMasukManager({
     }
 
     if (filterSuratStart) {
-      result = result.filter((item) => new Date(item.tanggal_surat) >= new Date(filterSuratStart));
+      result = result.filter(
+        (item) => new Date(item.tanggal_surat) >= new Date(filterSuratStart),
+      );
     }
     if (filterSuratEnd) {
-      result = result.filter((item) => new Date(item.tanggal_surat) <= new Date(filterSuratEnd));
+      result = result.filter(
+        (item) => new Date(item.tanggal_surat) <= new Date(filterSuratEnd),
+      );
     }
     if (filterStatus) {
       result = result.filter((item) => item.status === filterStatus);
     }
-    if (filterAgenda) {
-      result = result.filter((item) => item.agenda === filterAgenda);
-    }
+
 
     return result;
-  }, [items, debouncedSearch, filterSuratStart, filterSuratEnd, filterStatus, filterAgenda]);
+  }, [
+    items,
+    debouncedSearch,
+    filterSuratStart,
+    filterSuratEnd,
+    filterStatus,
+  ]);
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const paginated = filtered.slice(
@@ -243,7 +255,6 @@ export function SuratMasukManager({
       "Tanggal Terima",
       "Asal Surat",
       "Perihal",
-      "Agenda",
       "Status",
     ];
     const rows = filtered.map((item) => [
@@ -253,7 +264,6 @@ export function SuratMasukManager({
       item.tanggal_terima,
       item.asal_surat,
       item.perihal,
-      item.agenda || "",
       item.status || "",
     ]);
 
@@ -349,7 +359,10 @@ export function SuratMasukManager({
               <div className="w-48">
                 <ModernSelect
                   name="filterStatus"
-                  options={[{ value: "", label: "Semua Status" }, ...STATUS_OPTIONS]}
+                  options={[
+                    { value: "", label: "Semua Status" },
+                    ...STATUS_OPTIONS,
+                  ]}
                   value={filterStatus}
                   onChange={(val) => {
                     setFilterStatus(val);
@@ -358,30 +371,14 @@ export function SuratMasukManager({
                   placeholder="Semua Status"
                 />
               </div>
-              <div className="w-48">
-                <ModernSelect
-                  name="filterAgenda"
-                  options={[
-                    { value: "", label: "Semua Agenda" },
-                    ...initialAgendaOptions.map((opt) => ({ value: opt, label: opt })),
-                  ]}
-                  value={filterAgenda}
-                  onChange={(val) => {
-                    setFilterAgenda(val);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="Semua Agenda"
-                  enableSearch
-                  searchPlaceholder="Cari agenda..."
-                />
-              </div>
-              {(filterSuratStart || filterSuratEnd || filterStatus || filterAgenda) && (
+              {(filterSuratStart ||
+                filterSuratEnd ||
+                filterStatus) && (
                 <button
                   onClick={() => {
                     setFilterSuratStart("");
                     setFilterSuratEnd("");
                     setFilterStatus("");
-                    setFilterAgenda("");
                   }}
                   className="self-end px-3 py-2 text-xs font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all h-[42px]"
                 >
@@ -420,19 +417,36 @@ export function SuratMasukManager({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">No</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Info Surat</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tgl Surat</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tgl Terima</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Asal & Perihal</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Status</th>
-                  <th className="text-center px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-24">Aksi</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">
+                    No
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Info Surat
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Tgl Surat
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Tgl Terima
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Asal & Perihal
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="text-center px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-24">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {paginated.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-sm text-slate-400 font-semibold">
+                    <td
+                      colSpan={7}
+                      className="px-4 py-12 text-center text-sm text-slate-400 font-semibold"
+                    >
                       Belum ada data surat masuk
                     </td>
                   </tr>
@@ -449,11 +463,6 @@ export function SuratMasukManager({
                         <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                           {item.nomor_surat}
                         </p>
-                        {item.agenda && (
-                          <span className="text-[10px] font-semibold text-slate-400">
-                            {item.agenda}
-                          </span>
-                        )}
                       </td>
                       <td className="px-4 py-3.5 text-xs font-semibold text-slate-600 dark:text-slate-300">
                         {formatDate(item.tanggal_surat)}
@@ -481,6 +490,17 @@ export function SuratMasukManager({
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
+                          {item.lampiran && (
+                            <a
+                              href={item.lampiran}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                              title="Lihat Lampiran PDF"
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                            </a>
+                          )}
                           <button
                             onClick={() => openEdit(item)}
                             className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
@@ -514,7 +534,7 @@ export function SuratMasukManager({
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
                 </span>
-                  <select
+                <select
                   value={rowsPerPage}
                   onChange={(e) => {
                     setRowsPerPage(Number(e.target.value));
@@ -523,7 +543,9 @@ export function SuratMasukManager({
                   className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none"
                 >
                   {[10, 25, 50, 100, 200].map((n) => (
-                    <option key={n} value={n}>{n}</option>
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
                   ))}
                 </select>
                 <span className="text-[10px] font-semibold text-slate-400 ml-2">
@@ -531,25 +553,28 @@ export function SuratMasukManager({
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  Prev
-                </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-                  {currentPage} / {totalPages || 1}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                {getPaginationRange(currentPage, totalPages || 1).map((pageNum, idx) => {
+                  if (pageNum === "...") {
+                    return (
+                      <span key={`dots-${idx}`} className="px-2 text-slate-400 font-bold">
+                        ...
+                      </span>
+                    );
                   }
-                  disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  Next
-                </button>
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum as number)}
+                      className={`w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg border transition-all ${
+                        currentPage === pageNum
+                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                          : "bg-white dark:bg-[#1a1d24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -596,7 +621,10 @@ export function SuratMasukManager({
                       placeholder="B-100/Kk.17.05/1/BA.01/01/2026"
                       value={formData.nomor_surat}
                       onChange={(e) =>
-                        setFormData({ ...formData, nomor_surat: e.target.value })
+                        setFormData({
+                          ...formData,
+                          nomor_surat: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -637,22 +665,7 @@ export function SuratMasukManager({
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    Jenis Agenda
-                  </label>
-                    <ModernSelect
-                      name="agenda"
-                      options={initialAgendaOptions}
-                    value={formData.agenda}
-                    onChange={(val) =>
-                      setFormData({ ...formData, agenda: val })
-                    }
-                    enableSearch
-                    searchPlaceholder="Cari agenda..."
-                    placeholder="Pilih agenda"
-                  />
-                </div>
+
 
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
@@ -698,11 +711,14 @@ export function SuratMasukManager({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    Lampiran <span className="text-slate-400 dark:text-slate-500 font-normal lowercase">(opsional)</span>
+                    Lampiran{" "}
+                    <span className="text-slate-400 dark:text-slate-500 font-normal lowercase">
+                      (opsional, PDF maks 2MB)
+                    </span>
                   </label>
-                  <label 
+                  <label
                     className={`flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-black/20 border border-dashed rounded-xl cursor-pointer transition-all
-                      ${isDraggingFile ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-500/10' : 'border-slate-300 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:bg-emerald-50/30 dark:hover:bg-emerald-500/5'}
+                      ${isDraggingFile ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-500/10" : "border-slate-300 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:bg-emerald-50/30 dark:hover:bg-emerald-500/5"}
                     `}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -713,23 +729,53 @@ export function SuratMasukManager({
                       e.preventDefault();
                       setIsDraggingFile(false);
                       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        setLampiranFile(e.dataTransfer.files[0]);
+                        const file = e.dataTransfer.files[0];
+                        if (file.type !== "application/pdf") {
+                          toast.error("Hanya file PDF yang diperbolehkan");
+                          return;
+                        }
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast.error("Ukuran file maksimal 2 MB");
+                          return;
+                        }
+                        setLampiranFile(file);
                       }
                     }}
                   >
-                    <Upload className={`h-4 w-4 ${isDraggingFile ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`} />
-                    <span className={`text-xs font-semibold ${isDraggingFile ? 'text-emerald-600' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Upload
+                      className={`h-4 w-4 ${isDraggingFile ? "text-emerald-500" : "text-slate-400 dark:text-slate-500"}`}
+                    />
+                    <span
+                      className={`text-xs font-semibold ${isDraggingFile ? "text-emerald-600" : "text-slate-500 dark:text-slate-400"}`}
+                    >
                       {lampiranFile
                         ? lampiranFile.name
-                        : isDraggingFile ? "Lepaskan file di sini" : "Klik atau seret file ke sini"}
+                        : isDraggingFile
+                          ? "Lepaskan file di sini"
+                          : "Klik atau seret file ke sini"}
                     </span>
                     <input
                       type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
+                      accept=".pdf"
                       className="hidden"
-                      onChange={(e) =>
-                        setLampiranFile(e.target.files?.[0] || null)
-                      }
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.type !== "application/pdf") {
+                            toast.error("Hanya file PDF yang diperbolehkan");
+                            e.target.value = "";
+                            return;
+                          }
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast.error("Ukuran file maksimal 2 MB");
+                            e.target.value = "";
+                            return;
+                          }
+                          setLampiranFile(file);
+                        } else {
+                          setLampiranFile(null);
+                        }
+                      }}
                     />
                   </label>
                 </div>
@@ -817,16 +863,7 @@ export function SuratMasukManager({
                   </div>
                 </div>
 
-                {detailItem.agenda && (
-                  <div>
-                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                      Jenis Agenda
-                    </p>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">
-                      {detailItem.agenda}
-                    </p>
-                  </div>
-                )}
+
 
                 <div>
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
@@ -841,25 +878,10 @@ export function SuratMasukManager({
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Perihal
                   </p>
-                  <p className="text-sm text-slate-700 dark:text-slate-300">{detailItem.perihal}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">
+                    {detailItem.perihal}
+                  </p>
                 </div>
-
-                {detailItem.lampiran && (
-                  <div>
-                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                      Lampiran
-                    </p>
-                    <a
-                      href={detailItem.lampiran}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-all mt-1"
-                    >
-                      <FileText className="h-3.5 w-3.5" />
-                      Lihat Lampiran
-                    </a>
-                  </div>
-                )}
               </div>
 
               <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
@@ -888,6 +910,7 @@ export function SuratMasukManager({
         loading={submitting}
         onConfirm={handleDelete}
       />
+
     </div>
   );
 }

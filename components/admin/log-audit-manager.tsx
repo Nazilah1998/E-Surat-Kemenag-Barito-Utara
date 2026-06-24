@@ -1,12 +1,21 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Search, Filter, Download, Eye, X, Loader2 } from "lucide-react";
-import { getAuditLogsAction } from "@/lib/actions/admin-audit";
+import { Search, Filter, Download, Eye, X, Loader2, Trash2 } from "lucide-react";
+import { getAuditLogsAction, deleteAuditLogAction, deleteAllAuditLogsAction } from "@/lib/actions/admin-audit";
 import { ModernDatePicker } from "@/components/ui/modern-date-picker";
 import { ModernSelect } from "@/components/ui/modern-select";
 import { m, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { AlertDialog } from "@/components/ui/alert-dialog";
+
+const getPaginationRange = (current: number, total: number) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
+  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "...", current - 1, current, current + 1, "...", total];
+};
 
 export interface AuditLog {
   id: string;
@@ -22,8 +31,10 @@ export interface AuditLog {
 
 export function LogAuditManager({
   initialData = [],
+  isSuperAdmin = false,
 }: {
   initialData?: AuditLog[];
+  isSuperAdmin?: boolean;
 }) {
   const [items, setItems] = useState<AuditLog[]>(initialData);
   const [loading, setLoading] = useState(false);
@@ -45,6 +56,10 @@ export function LogAuditManager({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [detailItem, setDetailItem] = useState<AuditLog | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -60,6 +75,44 @@ export function LogAuditManager({
       setFetchError(e instanceof Error ? e.message : "Terjadi kesalahan");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deletingId) return;
+    setSubmitting(true);
+    try {
+      const res = await deleteAuditLogAction(deletingId);
+      if (res.success) {
+        toast.success(res.message || "Berhasil dihapus");
+        setShowDeleteConfirm(false);
+        setDeletingId(null);
+        fetchData();
+      } else {
+        toast.error(res.error || "Gagal menghapus");
+      }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Terjadi kesalahan");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    setSubmitting(true);
+    try {
+      const res = await deleteAllAuditLogsAction();
+      if (res.success) {
+        toast.success(res.message || "Semua log berhasil dihapus");
+        setShowDeleteAllConfirm(false);
+        fetchData();
+      } else {
+        toast.error(res.error || "Gagal menghapus semua log");
+      }
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Terjadi kesalahan");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -203,6 +256,17 @@ export function LogAuditManager({
             <Download className="h-4 w-4" />
             CSV
           </Button>
+          {isSuperAdmin && (
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => setShowDeleteAllConfirm(true)}
+              className="ml-auto bg-red-500 hover:bg-red-600 text-white"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Hapus Semua
+            </Button>
+          )}
         </div>
       </div>
 
@@ -369,6 +433,18 @@ export function LogAuditManager({
                           >
                             <Eye className="h-4 w-4" />
                           </button>
+                          {isSuperAdmin && (
+                            <button
+                              onClick={() => {
+                                setDeletingId(item.id);
+                                setShowDeleteConfirm(true);
+                              }}
+                              className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition-all"
+                              title="Hapus"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -402,25 +478,28 @@ export function LogAuditManager({
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  Prev
-                </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-                  {currentPage} / {totalPages || 1}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                {getPaginationRange(currentPage, totalPages || 1).map((pageNum, idx) => {
+                  if (pageNum === "...") {
+                    return (
+                      <span key={`dots-${idx}`} className="px-2 text-slate-400 font-bold">
+                        ...
+                      </span>
+                    );
                   }
-                  disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  Next
-                </button>
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum as number)}
+                      className={`w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg border transition-all ${
+                        currentPage === pageNum
+                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                          : "bg-white dark:bg-[#1a1d24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -536,6 +615,33 @@ export function LogAuditManager({
           </m.div>
         )}
       </AnimatePresence>
+
+      {/* Delete Confirmation */}
+      <AlertDialog
+        open={showDeleteConfirm}
+        onOpenChange={(v) => {
+          setShowDeleteConfirm(v);
+          if (!v) setDeletingId(null);
+        }}
+        title="Hapus Log Audit?"
+        description="Log ini akan dihapus secara permanen dari sistem. Anda yakin?"
+        cancelLabel="Batal"
+        confirmLabel="Hapus"
+        loading={submitting}
+        onConfirm={handleDelete}
+      />
+
+      {/* Delete All Confirmation */}
+      <AlertDialog
+        open={showDeleteAllConfirm}
+        onOpenChange={(v) => setShowDeleteAllConfirm(v)}
+        title="Hapus Semua Log Audit?"
+        description="Tindakan ini akan menghapus SELURUH riwayat aktivitas di Log Audit secara permanen. Tindakan ini tidak dapat dibatalkan. Anda yakin?"
+        cancelLabel="Batal"
+        confirmLabel="Ya, Hapus Semua"
+        loading={submitting}
+        onConfirm={handleDeleteAll}
+      />
     </div>
   );
 }

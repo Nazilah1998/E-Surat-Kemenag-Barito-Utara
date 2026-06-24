@@ -12,6 +12,8 @@ export const metadata = {
 
 export default async function LogAuditPage() {
   const result = await getAuditLogsAction(1, 10000);
+  const { isSuperAdmin } = await import("@/lib/auth");
+  const isSuper = await isSuperAdmin();
 
   return (
     <div className="space-y-6">
@@ -22,6 +24,7 @@ export default async function LogAuditPage() {
       />
       <LogAuditManager
         initialData={result.success ? (result.data as AuditLog[]) : []}
+        isSuperAdmin={isSuper}
       />
     </div>
   );

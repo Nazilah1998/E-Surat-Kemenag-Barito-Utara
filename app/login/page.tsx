@@ -89,12 +89,12 @@ export default function LoginPage() {
       {/* Content wrapper matching E-Arsip max-w-[440px] */}
       <div className="relative z-10 w-full max-w-[440px] px-4 sm:px-0">
         {/* Header / Logo section */}
-        <div className="mb-8 flex flex-col items-center text-center">
+        <div className="mb-10 sm:mb-12 flex flex-col items-center text-center">
           <m.div
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-20 h-20 rounded-2xl bg-white shadow-[0_10px_40px_-10px_rgba(5,150,105,0.15)] flex items-center justify-center mb-6 p-3 ring-1 ring-emerald-50"
+            className="w-20 h-20 rounded-2xl bg-white shadow-[0_10px_40px_-10px_rgba(5,150,105,0.15)] flex items-center justify-center mb-8 p-3 ring-1 ring-emerald-50"
           >
             <div className="relative w-full h-full">
               <Image
@@ -123,7 +123,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-2 sm:mt-3 text-2xl sm:text-[32px] leading-none font-black text-slate-800 tracking-tight"
+            className="mt-4 sm:mt-5 text-2xl sm:text-[32px] leading-none font-black text-slate-800 tracking-tight"
           >
             E-SURAT MANDAU
           </m.h1>
@@ -132,9 +132,9 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-1 sm:mt-3 space-y-1.5 px-0 sm:px-4"
+            className="mt-3 sm:mt-4 space-y-1.5 px-0 sm:px-4"
           >
-            <p className="text-[11px] min-[400px]:text-xs sm:text-sm font-medium text-slate-700 leading-tight">
+            <p className="text-[11px] min-[400px]:text-xs sm:text-sm font-medium text-slate-700 leading-relaxed">
               <span className="font-black text-slate-900">M</span>anajemen{" "}
               <span className="font-black text-slate-900">A</span>genda{" "}
               <span className="font-black text-slate-900">N</span>askah{" "}
@@ -302,7 +302,7 @@ export default function LoginPage() {
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-6 sm:bottom-10 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase text-center w-full px-4"
       >
-        © 2026 E-SURAT MANDAU KEMENAG BARITO UTARA
+        &copy; {new Date().getFullYear()} E-SURAT MANDAU KEMENAG BARITO UTARA
       </m.div>
     </div>
   );

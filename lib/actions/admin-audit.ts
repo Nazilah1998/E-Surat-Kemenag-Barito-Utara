@@ -45,3 +45,29 @@ export async function getAuditLogsAction(
     return { success: false, error: error instanceof Error ? error.message : "Failed to fetch logs" };
   }
 }
+
+export async function deleteAuditLogAction(id: string) {
+  try {
+    const { requireSuperAdmin } = await import("@/lib/auth");
+    await requireSuperAdmin();
+
+    await db.delete(auditLogs).where(eq(auditLogs.id, id));
+    return { success: true, message: "Log berhasil dihapus" };
+  } catch (error: unknown) {
+    console.error("Failed to delete audit log:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Gagal menghapus log" };
+  }
+}
+
+export async function deleteAllAuditLogsAction() {
+  try {
+    const { requireSuperAdmin } = await import("@/lib/auth");
+    await requireSuperAdmin();
+
+    await db.delete(auditLogs);
+    return { success: true, message: "Semua log berhasil dihapus" };
+  } catch (error: unknown) {
+    console.error("Failed to delete all audit logs:", error);
+    return { success: false, error: error instanceof Error ? error.message : "Gagal menghapus semua log" };
+  }
+}

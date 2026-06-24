@@ -6,29 +6,47 @@ import { Inbox, Send } from "lucide-react";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  const [suratMasukCount] = await db
-    .select({ total: count() })
-    .from(suratMasuk)
-    .where(isNull(suratMasuk.deletedAt));
-
-  const [suratKeluarCount] = await db
-    .select({ total: count() })
-    .from(suratKeluar)
-    .where(isNull(suratKeluar.deletedAt));
-
-  const [suratMasukBulanIni] = await db
-    .select({ total: count() })
-    .from(suratMasuk)
-    .where(
-      sql`${isNull(suratMasuk.deletedAt)} AND EXTRACT(MONTH FROM ${suratMasuk.createdAt}) = EXTRACT(MONTH FROM NOW())`,
-    );
-
-  const [suratKeluarBulanIni] = await db
-    .select({ total: count() })
-    .from(suratKeluar)
-    .where(
-      sql`${isNull(suratKeluar.deletedAt)} AND EXTRACT(MONTH FROM ${suratKeluar.createdAt}) = EXTRACT(MONTH FROM NOW())`,
-    );
+  const [
+    [suratMasukCount],
+    [suratKeluarCount],
+    [suratMasukBulanIni],
+    [suratKeluarBulanIni],
+    recentSuratMasuk,
+    recentSuratKeluar,
+  ] = await Promise.all([
+    db
+      .select({ total: count() })
+      .from(suratMasuk)
+      .where(isNull(suratMasuk.deletedAt)),
+    db
+      .select({ total: count() })
+      .from(suratKeluar)
+      .where(isNull(suratKeluar.deletedAt)),
+    db
+      .select({ total: count() })
+      .from(suratMasuk)
+      .where(
+        sql`${isNull(suratMasuk.deletedAt)} AND EXTRACT(MONTH FROM ${suratMasuk.createdAt}) = EXTRACT(MONTH FROM NOW())`,
+      ),
+    db
+      .select({ total: count() })
+      .from(suratKeluar)
+      .where(
+        sql`${isNull(suratKeluar.deletedAt)} AND EXTRACT(MONTH FROM ${suratKeluar.createdAt}) = EXTRACT(MONTH FROM NOW())`,
+      ),
+    db
+      .select()
+      .from(suratMasuk)
+      .where(isNull(suratMasuk.deletedAt))
+      .orderBy(sql`${suratMasuk.createdAt} DESC`)
+      .limit(5),
+    db
+      .select()
+      .from(suratKeluar)
+      .where(isNull(suratKeluar.deletedAt))
+      .orderBy(sql`${suratKeluar.createdAt} DESC`)
+      .limit(5),
+  ]);
 
   const metrics = [
     {
@@ -46,20 +64,6 @@ export default async function DashboardPage() {
       color: "violet",
     },
   ];
-
-  const recentSuratMasuk = await db
-    .select()
-    .from(suratMasuk)
-    .where(isNull(suratMasuk.deletedAt))
-    .orderBy(sql`${suratMasuk.createdAt} DESC`)
-    .limit(5);
-
-  const recentSuratKeluar = await db
-    .select()
-    .from(suratKeluar)
-    .where(isNull(suratKeluar.deletedAt))
-    .orderBy(sql`${suratKeluar.createdAt} DESC`)
-    .limit(5);
 
   return (
     <div className="space-y-6">
@@ -102,7 +106,9 @@ export default async function DashboardPage() {
                 style={{ width: `${Math.min(100, (m.value / 100) * 100)}%` }}
               />
             </div>
-            <p className="mt-2 text-[11px] font-semibold text-slate-400">{m.subtitle}</p>
+            <p className="mt-2 text-[11px] font-semibold text-slate-400">
+              {m.subtitle}
+            </p>
           </div>
         ))}
       </div>
@@ -114,19 +120,31 @@ export default async function DashboardPage() {
           <div className="px-5 py-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Inbox className="h-4 w-4 text-emerald-600 dark:text-emerald-500" />
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Surat Masuk Terbaru</h3>
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                Surat Masuk Terbaru
+              </h3>
             </div>
-            <Link href="/surat-masuk" className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400">
+            <Link
+              href="/surat-masuk"
+              className="text-[10px] font-bold text-emerald-600 dark:text-emerald-500 hover:text-emerald-700 dark:hover:text-emerald-400"
+            >
               Lihat Semua
             </Link>
           </div>
           <div className="divide-y divide-slate-100 dark:divide-white/5 flex-1">
             {recentSuratMasuk.length > 0 ? (
               recentSuratMasuk.map((surat) => (
-                <div key={surat.id} className="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{surat.perihal}</p>
+                <div
+                  key={surat.id}
+                  className="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                >
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">
+                    {surat.perihal}
+                  </p>
                   <div className="flex items-center justify-between mt-1.5">
-                    <p className="text-[10px] font-medium text-slate-500">{surat.asalSurat}</p>
+                    <p className="text-[10px] font-medium text-slate-500">
+                      {surat.asalSurat}
+                    </p>
                     <p className="text-[10px] font-semibold text-slate-400">
                       {new Date(surat.createdAt).toLocaleDateString("id-ID")}
                     </p>
@@ -135,7 +153,9 @@ export default async function DashboardPage() {
               ))
             ) : (
               <div className="p-8 text-center">
-                <p className="text-xs font-medium text-slate-400">Belum ada surat masuk</p>
+                <p className="text-xs font-medium text-slate-400">
+                  Belum ada surat masuk
+                </p>
               </div>
             )}
           </div>
@@ -146,19 +166,31 @@ export default async function DashboardPage() {
           <div className="px-5 py-4 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Send className="h-4 w-4 text-violet-600 dark:text-violet-500" />
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Surat Keluar Terbaru</h3>
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                Surat Keluar Terbaru
+              </h3>
             </div>
-            <Link href="/surat-keluar" className="text-[10px] font-bold text-violet-600 dark:text-violet-500 hover:text-violet-700 dark:hover:text-violet-400">
+            <Link
+              href="/surat-keluar"
+              className="text-[10px] font-bold text-violet-600 dark:text-violet-500 hover:text-violet-700 dark:hover:text-violet-400"
+            >
               Lihat Semua
             </Link>
           </div>
           <div className="divide-y divide-slate-100 dark:divide-white/5 flex-1">
             {recentSuratKeluar.length > 0 ? (
               recentSuratKeluar.map((surat) => (
-                <div key={surat.id} className="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">{surat.perihal}</p>
+                <div
+                  key={surat.id}
+                  className="p-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                >
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-1">
+                    {surat.perihal}
+                  </p>
                   <div className="flex items-center justify-between mt-1.5">
-                    <p className="text-[10px] font-medium text-slate-500">{surat.tujuanSurat}</p>
+                    <p className="text-[10px] font-medium text-slate-500">
+                      {surat.tujuanSurat}
+                    </p>
                     <p className="text-[10px] font-semibold text-slate-400">
                       {new Date(surat.createdAt).toLocaleDateString("id-ID")}
                     </p>
@@ -167,7 +199,9 @@ export default async function DashboardPage() {
               ))
             ) : (
               <div className="p-8 text-center">
-                <p className="text-xs font-medium text-slate-400">Belum ada surat keluar</p>
+                <p className="text-xs font-medium text-slate-400">
+                  Belum ada surat keluar
+                </p>
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { User, Menu, ChevronDown, LogOut, ShieldCheck, KeyRound } from "lucide-react";
+import { User, Menu, ChevronDown, LogOut, ShieldCheck, KeyRound, Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -21,15 +21,46 @@ function ChangePasswordModal({
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // Kalkulasi kekuatan password
+  const getPasswordStrength = (pass: string) => {
+    let score = 0;
+    if (!pass) return score;
+    if (pass.length >= 8) score += 1;
+    if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score += 1;
+    if (/\d/.test(pass)) score += 1;
+    if (/[^a-zA-Z0-9]/.test(pass)) score += 1;
+    return score;
+  };
+
+  const strength = getPasswordStrength(password);
+  
+  const getStrengthColor = (score: number) => {
+    if (score === 0) return "bg-slate-200 dark:bg-slate-800";
+    if (score === 1) return "bg-red-500";
+    if (score === 2) return "bg-orange-500";
+    if (score === 3) return "bg-yellow-500";
+    return "bg-emerald-500";
+  };
+
+  const getStrengthText = (score: number) => {
+    if (score === 0) return "";
+    if (score === 1) return "Sangat Lemah";
+    if (score === 2) return "Lemah";
+    if (score === 3) return "Cukup Baik";
+    return "Kuat";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirm) {
-      toast.error("Password tidak cocok");
+      toast.error("Konfirmasi password tidak cocok");
       return;
     }
     if (password.length < 6) {
-      toast.error("Minimal 6 karakter");
+      toast.error("Password minimal 6 karakter");
       return;
     }
     setLoading(true);
@@ -41,6 +72,8 @@ function ChangePasswordModal({
       onOpenChange(false);
       setPassword("");
       setConfirm("");
+      setShowPassword(false);
+      setShowConfirm(false);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Gagal mengubah password");
     } finally {
@@ -52,45 +85,93 @@ function ChangePasswordModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent onClose={() => onOpenChange(false)} className="max-w-md">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-              <KeyRound className="h-5 w-5 text-emerald-600" />
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
+              <KeyRound className="h-5 w-5 text-emerald-600 dark:text-emerald-500" />
             </div>
             <div>
               <DialogTitle>Ubah Password</DialogTitle>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                 Masukkan password baru Anda
               </p>
             </div>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">
                 Password Baru
               </label>
-              <Input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimal 6 karakter"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Minimal 6 karakter"
+                  className="pr-10 bg-slate-50/50 dark:bg-slate-900/50"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              
+              {/* Password Strength Indicator */}
+              {password.length > 0 && (
+                <div className="pt-1.5 px-1">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    {[1, 2, 3, 4].map((level) => (
+                      <div
+                        key={level}
+                        className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
+                          strength >= level ? getStrengthColor(strength) : "bg-slate-200 dark:bg-slate-800"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <div className="text-[10px] font-bold text-right" style={{ color: strength >= 1 ? 'inherit' : 'transparent' }}>
+                    <span className={
+                      strength === 1 ? "text-red-500" :
+                      strength === 2 ? "text-orange-500" :
+                      strength === 3 ? "text-yellow-500" :
+                      "text-emerald-500"
+                    }>
+                      {getStrengthText(strength)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
+
             <div className="space-y-1.5">
-              <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest ml-1">
+              <label className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">
                 Konfirmasi Password
               </label>
-              <Input
-                type="password"
-                required
-                minLength={6}
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                placeholder="Ulangi password"
-              />
+              <div className="relative">
+                <Input
+                  type={showConfirm ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  placeholder="Ulangi password"
+                  className="pr-10 bg-slate-50/50 dark:bg-slate-900/50"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-3 pt-2">
+
+            <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
               <Button
                 type="button"
                 variant="outline"
@@ -101,7 +182,7 @@ function ChangePasswordModal({
                 Batal
               </Button>
               <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? "Menyimpan..." : "Simpan"}
+                {loading ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </div>
           </form>

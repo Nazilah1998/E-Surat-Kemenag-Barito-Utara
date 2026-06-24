@@ -31,6 +31,13 @@ import { AlertDialog } from "@/components/ui/alert-dialog";
 
 import { BADGE_COLOR_MAP } from "@/lib/constants";
 
+const getPaginationRange = (current: number, total: number) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
+  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "...", current - 1, current, current + 1, "...", total];
+};
+
 export interface SuratKeluar {
   id: string;
   nomor_surat: string;
@@ -139,10 +146,14 @@ export function SuratKeluarManager({
     }
 
     if (filterStartDate) {
-      result = result.filter((item) => new Date(item.tanggal_surat) >= new Date(filterStartDate));
+      result = result.filter(
+        (item) => new Date(item.tanggal_surat) >= new Date(filterStartDate),
+      );
     }
     if (filterEndDate) {
-      result = result.filter((item) => new Date(item.tanggal_surat) <= new Date(filterEndDate));
+      result = result.filter(
+        (item) => new Date(item.tanggal_surat) <= new Date(filterEndDate),
+      );
     }
     if (filterStatus) {
       result = result.filter((item) => item.status === filterStatus);
@@ -155,7 +166,15 @@ export function SuratKeluarManager({
     }
 
     return result;
-  }, [items, debouncedSearch, filterStartDate, filterEndDate, filterStatus, filterAgenda, filterUnitKerja]);
+  }, [
+    items,
+    debouncedSearch,
+    filterStartDate,
+    filterEndDate,
+    filterStatus,
+    filterAgenda,
+    filterUnitKerja,
+  ]);
 
   const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const paginated = filtered.slice(
@@ -360,7 +379,10 @@ export function SuratKeluarManager({
               <div className="w-48">
                 <ModernSelect
                   name="filterStatus"
-                  options={[{ value: "", label: "Semua Status" }, ...STATUS_OPTIONS]}
+                  options={[
+                    { value: "", label: "Semua Status" },
+                    ...STATUS_OPTIONS,
+                  ]}
                   value={filterStatus}
                   onChange={(val) => {
                     setFilterStatus(val);
@@ -374,7 +396,10 @@ export function SuratKeluarManager({
                   name="filterAgenda"
                   options={[
                     { value: "", label: "Semua Agenda" },
-                    ...initialAgendaOptions.map((opt) => ({ value: opt, label: opt })),
+                    ...initialAgendaOptions.map((opt) => ({
+                      value: opt,
+                      label: opt,
+                    })),
                   ]}
                   value={filterAgenda}
                   onChange={(val) => {
@@ -391,7 +416,10 @@ export function SuratKeluarManager({
                   name="filterUnitKerja"
                   options={[
                     { value: "", label: "Semua Unit Kerja" },
-                    ...initialUnitKerjaOptions.map((opt) => ({ value: opt, label: opt })),
+                    ...initialUnitKerjaOptions.map((opt) => ({
+                      value: opt,
+                      label: opt,
+                    })),
                   ]}
                   value={filterUnitKerja}
                   onChange={(val) => {
@@ -403,7 +431,11 @@ export function SuratKeluarManager({
                   searchPlaceholder="Cari unit kerja..."
                 />
               </div>
-              {(filterStartDate || filterEndDate || filterStatus || filterAgenda || filterUnitKerja) && (
+              {(filterStartDate ||
+                filterEndDate ||
+                filterStatus ||
+                filterAgenda ||
+                filterUnitKerja) && (
                 <button
                   onClick={() => {
                     setFilterStartDate("");
@@ -449,20 +481,39 @@ export function SuratKeluarManager({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">No</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Info Surat</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tanggal</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Agenda</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Unit Kerja</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Status</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tujuan & Perihal</th>
-                  <th className="text-center px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-24">Aksi</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-12">
+                    No
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Info Surat
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Tanggal
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Agenda
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Unit Kerja
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="text-left px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    Tujuan & Perihal
+                  </th>
+                  <th className="text-center px-4 py-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider w-24">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {paginated.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center text-sm text-slate-400 font-semibold">
+                    <td
+                      colSpan={8}
+                      className="px-4 py-12 text-center text-sm text-slate-400 font-semibold"
+                    >
                       Belum ada data surat keluar
                     </td>
                   </tr>
@@ -486,7 +537,9 @@ export function SuratKeluarManager({
                       <td className="px-4 py-3.5">
                         <span
                           className={`inline-flex px-2 py-1 text-[10px] font-bold rounded-lg border ${
-                            (agendaColors[item.agenda] ? BADGE_COLOR_MAP[agendaColors[item.agenda]] : null) ||
+                            (agendaColors[item.agenda]
+                              ? BADGE_COLOR_MAP[agendaColors[item.agenda]]
+                              : null) ||
                             "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10"
                           }`}
                         >
@@ -496,7 +549,11 @@ export function SuratKeluarManager({
                       <td className="px-4 py-3.5">
                         <span
                           className={`inline-flex px-2 py-1 text-[10px] font-bold rounded-lg border ${
-                            (unitKerjaColors[item.unit_kerja] ? BADGE_COLOR_MAP[unitKerjaColors[item.unit_kerja]] : null) ||
+                            (unitKerjaColors[item.unit_kerja]
+                              ? BADGE_COLOR_MAP[
+                                  unitKerjaColors[item.unit_kerja]
+                                ]
+                              : null) ||
                             "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10"
                           }`}
                         >
@@ -523,6 +580,17 @@ export function SuratKeluarManager({
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </button>
+                          {item.lampiran && (
+                            <a
+                              href={item.lampiran}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-500/10 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                              title="Lihat Lampiran PDF"
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                            </a>
+                          )}
                           <button
                             onClick={() => openEdit(item)}
                             className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-500/10 text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all"
@@ -556,7 +624,7 @@ export function SuratKeluarManager({
                 <span className="text-[10px] font-bold text-slate-400">
                   Baris per halaman:
                 </span>
-                  <select
+                <select
                   value={rowsPerPage}
                   onChange={(e) => {
                     setRowsPerPage(Number(e.target.value));
@@ -565,7 +633,9 @@ export function SuratKeluarManager({
                   className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none"
                 >
                   {[10, 25, 50, 100, 200].map((n) => (
-                    <option key={n} value={n}>{n}</option>
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
                   ))}
                 </select>
                 <span className="text-[10px] font-semibold text-slate-400 ml-2">
@@ -573,25 +643,28 @@ export function SuratKeluarManager({
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  Prev
-                </button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-                  {currentPage} / {totalPages || 1}
-                </span>
-                <button
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                {getPaginationRange(currentPage, totalPages || 1).map((pageNum, idx) => {
+                  if (pageNum === "...") {
+                    return (
+                      <span key={`dots-${idx}`} className="px-2 text-slate-400 font-bold">
+                        ...
+                      </span>
+                    );
                   }
-                  disabled={currentPage === totalPages || totalPages === 0}
-                  className="px-3 py-1.5 text-xs font-bold rounded-lg bg-white dark:bg-[#1a1d24] border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  Next
-                </button>
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum as number)}
+                      className={`w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg border transition-all ${
+                        currentPage === pageNum
+                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                          : "bg-white dark:bg-[#1a1d24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -638,7 +711,10 @@ export function SuratKeluarManager({
                       placeholder="B-___/Kk.17.05/1/BA.01/__/2026"
                       value={formData.nomor_surat}
                       onChange={(e) =>
-                        setFormData({ ...formData, nomor_surat: e.target.value })
+                        setFormData({
+                          ...formData,
+                          nomor_surat: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -713,7 +789,10 @@ export function SuratKeluarManager({
                     placeholder="Instansi atau perorangan tujuan..."
                     value={formData.tujuan_surat}
                     onChange={(e) => {
-                      setFormData({ ...formData, tujuan_surat: e.target.value });
+                      setFormData({
+                        ...formData,
+                        tujuan_surat: e.target.value,
+                      });
                     }}
                     onBlur={(e) => {
                       const val = e.target.value;
@@ -745,11 +824,14 @@ export function SuratKeluarManager({
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                    Lampiran <span className="text-slate-400 dark:text-slate-500 font-normal lowercase">(opsional)</span>
+                    Lampiran{" "}
+                    <span className="text-slate-400 dark:text-slate-500 font-normal lowercase">
+                      (opsional, PDF maks 2MB)
+                    </span>
                   </label>
-                  <label 
+                  <label
                     className={`flex items-center gap-3 px-4 py-3 bg-slate-50 dark:bg-black/20 border border-dashed rounded-xl cursor-pointer transition-all
-                      ${isDraggingFile ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-500/10' : 'border-slate-300 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:bg-emerald-50/30 dark:hover:bg-emerald-500/5'}
+                      ${isDraggingFile ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-500/10" : "border-slate-300 dark:border-white/10 hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:bg-emerald-50/30 dark:hover:bg-emerald-500/5"}
                     `}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -760,23 +842,53 @@ export function SuratKeluarManager({
                       e.preventDefault();
                       setIsDraggingFile(false);
                       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        setLampiranFile(e.dataTransfer.files[0]);
+                        const file = e.dataTransfer.files[0];
+                        if (file.type !== "application/pdf") {
+                          toast.error("Hanya file PDF yang diperbolehkan");
+                          return;
+                        }
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast.error("Ukuran file maksimal 2 MB");
+                          return;
+                        }
+                        setLampiranFile(file);
                       }
                     }}
                   >
-                    <Upload className={`h-4 w-4 ${isDraggingFile ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`} />
-                    <span className={`text-xs font-semibold ${isDraggingFile ? 'text-emerald-600' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Upload
+                      className={`h-4 w-4 ${isDraggingFile ? "text-emerald-500" : "text-slate-400 dark:text-slate-500"}`}
+                    />
+                    <span
+                      className={`text-xs font-semibold ${isDraggingFile ? "text-emerald-600" : "text-slate-500 dark:text-slate-400"}`}
+                    >
                       {lampiranFile
                         ? lampiranFile.name
-                        : isDraggingFile ? "Lepaskan file di sini" : "Klik atau seret file ke sini"}
+                        : isDraggingFile
+                          ? "Lepaskan file di sini"
+                          : "Klik atau seret file ke sini"}
                     </span>
                     <input
                       type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
+                      accept=".pdf"
                       className="hidden"
-                      onChange={(e) =>
-                        setLampiranFile(e.target.files?.[0] || null)
-                      }
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.type !== "application/pdf") {
+                            toast.error("Hanya file PDF yang diperbolehkan");
+                            e.target.value = "";
+                            return;
+                          }
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast.error("Ukuran file maksimal 2 MB");
+                            e.target.value = "";
+                            return;
+                          }
+                          setLampiranFile(file);
+                        } else {
+                          setLampiranFile(null);
+                        }
+                      }}
                     />
                   </label>
                 </div>
@@ -857,7 +969,9 @@ export function SuratKeluarManager({
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border ${
-                      (agendaColors[detailItem.agenda] ? BADGE_COLOR_MAP[agendaColors[detailItem.agenda]] : null) ||
+                      (agendaColors[detailItem.agenda]
+                        ? BADGE_COLOR_MAP[agendaColors[detailItem.agenda]]
+                        : null) ||
                       "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10"
                     }`}
                   >
@@ -865,7 +979,11 @@ export function SuratKeluarManager({
                   </span>
                   <span
                     className={`inline-flex px-2.5 py-1 text-[10px] font-bold rounded-lg border ${
-                      (unitKerjaColors[detailItem.unit_kerja] ? BADGE_COLOR_MAP[unitKerjaColors[detailItem.unit_kerja]] : null) ||
+                      (unitKerjaColors[detailItem.unit_kerja]
+                        ? BADGE_COLOR_MAP[
+                            unitKerjaColors[detailItem.unit_kerja]
+                          ]
+                        : null) ||
                       "bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10"
                     }`}
                   >
@@ -886,25 +1004,10 @@ export function SuratKeluarManager({
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Perihal
                   </p>
-                  <p className="text-sm text-slate-700 dark:text-slate-300">{detailItem.perihal}</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">
+                    {detailItem.perihal}
+                  </p>
                 </div>
-
-                {detailItem.lampiran && (
-                  <div>
-                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                      Lampiran
-                    </p>
-                    <a
-                      href={detailItem.lampiran}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-all mt-1"
-                    >
-                      <FileText className="h-3.5 w-3.5" />
-                      Lihat Lampiran
-                    </a>
-                  </div>
-                )}
               </div>
 
               <div className="flex items-center justify-end px-6 py-4 border-t border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
@@ -933,6 +1036,7 @@ export function SuratKeluarManager({
         loading={submitting}
         onConfirm={handleDelete}
       />
+
     </div>
   );
 }

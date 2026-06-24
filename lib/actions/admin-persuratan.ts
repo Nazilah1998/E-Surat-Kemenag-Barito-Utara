@@ -5,20 +5,16 @@ import { requireAuth } from "@/lib/auth";
 import { z } from "zod";
 import { db, serializeBigInt } from "@/lib/db";
 import { suratMasuk, suratKeluar } from "@/lib/db/schema";
-import {
-  eq,
-  ne,
-  like,
-  desc,
-  and,
-  isNull,
-  sql,
-} from "drizzle-orm";
+import { eq, ne, like, desc, and, isNull, sql } from "drizzle-orm";
 import {
   syncSuratMasukToSheet,
   syncSuratKeluarToSheet,
 } from "@/lib/services/sync-sheets";
-import { uploadLampiran, deleteLampiran } from "@/lib/services/storage";
+import {
+  uploadLampiran,
+  deleteLampiran,
+  getLampiranUrl,
+} from "@/lib/services/storage";
 import { after } from "next/server";
 import { createAuditLog } from "@/lib/audit";
 
@@ -40,8 +36,12 @@ const SuratMasukSchema = z
   .object({
     id: z.string().optional().or(z.literal("")),
     nomor_surat: z.string().min(1, "Nomor surat wajib diisi"),
-    tanggal_surat: z.string().regex(dateRegex, "Format tanggal harus YYYY-MM-DD"),
-    tanggal_terima: z.string().regex(dateRegex, "Format tanggal harus YYYY-MM-DD"),
+    tanggal_surat: z
+      .string()
+      .regex(dateRegex, "Format tanggal harus YYYY-MM-DD"),
+    tanggal_terima: z
+      .string()
+      .regex(dateRegex, "Format tanggal harus YYYY-MM-DD"),
     asal_surat: z.string().min(1, "Asal surat wajib diisi"),
     perihal: z.string().min(1, "Perihal wajib diisi"),
     agenda: z.string().optional(),
@@ -68,13 +68,16 @@ const SuratKeluarSchema = z.object({
 });
 
 async function syncToSheetSafe(fn: () => Promise<void>, context: string) {
-  setTimeout(async () => {
+  after(async () => {
     try {
       await fn();
     } catch (error: unknown) {
-      console.error(`[Sync Error] ${context}:`, error instanceof Error ? error.message : error);
+      console.error(
+        `[Sync Error] ${context}:`,
+        error instanceof Error ? error.message : error,
+      );
     }
-  }, 0);
+  });
 }
 
 async function getNextExternalId(
@@ -123,7 +126,10 @@ async function checkDuplicateNomorSurat(
   nomorSurat: string,
   excludeExternalId?: string,
 ): Promise<boolean> {
-  const conditions = [eq(table.nomorSurat, nomorSurat), isNull(table.deletedAt)];
+  const conditions = [
+    eq(table.nomorSurat, nomorSurat),
+    isNull(table.deletedAt),
+  ];
   if (excludeExternalId) {
     conditions.push(ne(table.externalId, excludeExternalId));
   }
@@ -141,15 +147,24 @@ async function handleFileUpload(
   prefix: "masuk" | "keluar",
   suratId: string,
 ): Promise<string | null> {
-  if (!lampiranFile || !(lampiranFile instanceof File) || lampiranFile.size === 0) {
+  if (
+    !lampiranFile ||
+    !(lampiranFile instanceof File) ||
+    lampiranFile.size === 0
+  ) {
     return existingLampiran || null;
   }
 
-  if (existingLampiran) {
-    await deleteLampiran(existingLampiran).catch(() => {});
-  }
+  const predictedUrl = await getLampiranUrl(lampiranFile, prefix, suratId);
 
-  return await uploadLampiran(lampiranFile, prefix, suratId);
+  after(async () => {
+    if (existingLampiran && existingLampiran !== predictedUrl) {
+      await deleteLampiran(existingLampiran).catch(() => {});
+    }
+    await uploadLampiran(lampiranFile, prefix, suratId).catch(console.error);
+  });
+
+  return predictedUrl;
 }
 
 // ── SURAT MASUK ──
@@ -180,7 +195,6 @@ export async function getSuratMasukAction(
         deletedAt: suratMasuk.deletedAt,
         createdBy: suratMasuk.createdBy,
         updatedBy: suratMasuk.updatedBy,
-        totalCount: sql<number>`count(*) over()`,
       })
       .from(suratMasuk)
       .where(isNull(suratMasuk.deletedAt))
@@ -188,7 +202,7 @@ export async function getSuratMasukAction(
       .limit(safePageSize)
       .offset(offset);
 
-    const total = rows.length > 0 ? Number(rows[0].totalCount) : 0;
+    const total = rows.length;
 
     const data = rows.map((r) => ({
       id: r.externalId,
@@ -212,7 +226,10 @@ export async function getSuratMasukAction(
   } catch (error: unknown) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Gagal mengambil data surat masuk",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data surat masuk",
     };
   }
 }
@@ -244,7 +261,10 @@ export async function saveSuratMasukAction(
 
     if (isUpdate) {
       const existing = await db
-        .select({ externalId: suratMasuk.externalId, lampiran: suratMasuk.lampiran })
+        .select({
+          externalId: suratMasuk.externalId,
+          lampiran: suratMasuk.lampiran,
+        })
         .from(suratMasuk)
         .where(and(eq(suratMasuk.externalId, id), isNull(suratMasuk.deletedAt)))
         .limit(1);
@@ -253,7 +273,11 @@ export async function saveSuratMasukAction(
         return { success: false, error: "Data surat tidak ditemukan." };
       }
 
-      const isDuplicate = await checkDuplicateNomorSurat(suratMasuk, fields.nomor_surat, id);
+      const isDuplicate = await checkDuplicateNomorSurat(
+        suratMasuk,
+        fields.nomor_surat,
+        id,
+      );
       if (isDuplicate) {
         return {
           success: false,
@@ -301,7 +325,12 @@ export async function saveSuratMasukAction(
         };
       }
 
-      const lampiran = await handleFileUpload(lampiran_file ?? null, null, "masuk", externalId);
+      const lampiran = await handleFileUpload(
+        lampiran_file ?? null,
+        null,
+        "masuk",
+        externalId,
+      );
 
       await db.insert(suratMasuk).values({
         externalId,
@@ -341,7 +370,10 @@ export async function saveSuratMasukAction(
   } catch (error: unknown) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Gagal menyimpan data surat masuk",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal menyimpan data surat masuk",
     };
   }
 }
@@ -398,7 +430,10 @@ export async function deleteSuratMasukAction(
   } catch (error: unknown) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Gagal menghapus data surat masuk",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal menghapus data surat masuk",
     };
   }
 }
@@ -431,7 +466,6 @@ export async function getSuratKeluarAction(
         deletedAt: suratKeluar.deletedAt,
         createdBy: suratKeluar.createdBy,
         updatedBy: suratKeluar.updatedBy,
-        totalCount: sql<number>`count(*) over()`,
       })
       .from(suratKeluar)
       .where(isNull(suratKeluar.deletedAt))
@@ -439,7 +473,7 @@ export async function getSuratKeluarAction(
       .limit(safePageSize)
       .offset(offset);
 
-    const total = rows.length > 0 ? Number(rows[0].totalCount) : 0;
+    const total = rows.length;
 
     const data = rows.map((r) => ({
       id: r.externalId,
@@ -463,7 +497,10 @@ export async function getSuratKeluarAction(
   } catch (error: unknown) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Gagal mengambil data surat keluar",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data surat keluar",
     };
   }
 }
@@ -495,9 +532,14 @@ export async function saveSuratKeluarAction(
 
     if (isUpdate) {
       const existing = await db
-        .select({ externalId: suratKeluar.externalId, lampiran: suratKeluar.lampiran })
+        .select({
+          externalId: suratKeluar.externalId,
+          lampiran: suratKeluar.lampiran,
+        })
         .from(suratKeluar)
-        .where(and(eq(suratKeluar.externalId, id), isNull(suratKeluar.deletedAt)))
+        .where(
+          and(eq(suratKeluar.externalId, id), isNull(suratKeluar.deletedAt)),
+        )
         .limit(1);
 
       if (existing.length === 0) {
@@ -540,8 +582,7 @@ export async function saveSuratKeluarAction(
         .where(eq(suratKeluar.externalId, id));
 
       syncToSheetSafe(
-        () =>
-          syncSuratKeluarToSheet({ externalId: id, ...fields }, "update"),
+        () => syncSuratKeluarToSheet({ externalId: id, ...fields }, "update"),
         `update surat keluar ${id}`,
       );
     } else {
@@ -578,8 +619,7 @@ export async function saveSuratKeluarAction(
       });
 
       syncToSheetSafe(
-        () =>
-          syncSuratKeluarToSheet({ externalId, ...fields }, "create"),
+        () => syncSuratKeluarToSheet({ externalId, ...fields }, "create"),
         `create surat keluar ${externalId}`,
       );
     }
@@ -603,7 +643,10 @@ export async function saveSuratKeluarAction(
   } catch (error: unknown) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Gagal menyimpan data surat keluar",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal menyimpan data surat keluar",
     };
   }
 }
@@ -661,7 +704,10 @@ export async function deleteSuratKeluarAction(
   } catch (error: unknown) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Gagal menghapus data surat keluar",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Gagal menghapus data surat keluar",
     };
   }
 }

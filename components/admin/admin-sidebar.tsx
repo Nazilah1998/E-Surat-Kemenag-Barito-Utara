@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -11,8 +12,6 @@ import {
   Settings2,
   type LucideIcon,
   ChevronRight,
-  Shield,
-  Mail,
 } from "lucide-react";
 import { SystemHealthBadge } from "@/components/admin/system-health-badge";
 
@@ -85,9 +84,13 @@ export function AdminSidebar({
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-white/5 shrink-0">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#064e3b] to-[#059669] flex items-center justify-center text-white shadow-lg shadow-emerald-500/20 shrink-0 relative">
-          <Shield className="h-[22px] w-[22px] absolute" strokeWidth={2} />
-          <Mail className="h-3 w-3 absolute mt-[1px]" strokeWidth={2.5} />
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0 relative overflow-hidden p-1.5">
+          <Image
+            src="/copy.png"
+            alt="Logo E-Surat"
+            fill
+            className="object-contain p-1.5"
+          />
         </div>
         {!collapsed && (
           <div className="min-w-0">
@@ -119,7 +122,7 @@ export function AdminSidebar({
                       key={item.href}
                       href={item.href}
                       onClick={onLinkClick}
-                      className={`group/link flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[15px] font-bold transition-all duration-300 relative overflow-hidden ${
+                      className={`group/link flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-[13px] uppercase tracking-wider font-bold transition-all duration-300 relative overflow-hidden ${
                         isActive
                           ? "text-emerald-400 shadow-sm ring-1 ring-emerald-500/20 bg-emerald-500/10"
                           : "text-white/60 hover:text-white hover:translate-x-1"
@@ -135,7 +138,7 @@ export function AdminSidebar({
                       {isActive && !collapsed && (
                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-3/4 bg-emerald-400 rounded-r-full shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                       )}
-                      
+
                       <item.icon
                         className={`h-5 w-5 shrink-0 transition-transform duration-300 relative z-10 ${
                           isActive
@@ -145,7 +148,9 @@ export function AdminSidebar({
                       />
                       {!collapsed && (
                         <>
-                          <span className="truncate relative z-10 tracking-wide">{item.label}</span>
+                          <span className="truncate relative z-10 tracking-wide">
+                            {item.label}
+                          </span>
                           {isActive && (
                             <ChevronRight className="h-4 w-4 ml-auto text-emerald-400 shrink-0 relative z-10 drop-shadow-md" />
                           )}
