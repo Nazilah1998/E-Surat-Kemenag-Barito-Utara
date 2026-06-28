@@ -14,8 +14,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://surat.kemenag-baritoutara.com"),
   title: {
-    default: "E-Surat Mandau | Kemenag Barito Utara",
-    template: "%s | E-Surat Mandau",
+    default: "SI MANDAU | Kemenag Barito Utara",
+    template: "%s | SI MANDAU",
   },
   description:
     "Portal resmi Sistem Informasi Manajemen Persuratan Elektronik (E-Surat) Kementerian Agama (Kemenag) Kabupaten Barito Utara. Masuk ke panel admin untuk mengelola administrasi persuratan.",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "kementerian agama barito utara",
     "persuratan elektronik kemenag",
     "aplikasi surat kemenag",
-    "e-surat mandau kemenag",
+    "si mandau kemenag",
     "sistem surat kemenag",
   ],
   authors: [{ name: "Kemenag Barito Utara" }],
@@ -34,10 +34,10 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     url: "https://surat.kemenag-baritoutara.com",
-    title: "E-Surat Mandau | Kemenag Barito Utara",
+    title: "SI MANDAU | Kemenag Barito Utara",
     description:
       "Portal resmi Sistem Informasi Manajemen Persuratan Elektronik Kementerian Agama Kabupaten Barito Utara.",
-    siteName: "E-Surat Mandau Kemenag Barito Utara",
+    siteName: "SI MANDAU Kemenag Barito Utara",
   },
   robots: {
     index: true,

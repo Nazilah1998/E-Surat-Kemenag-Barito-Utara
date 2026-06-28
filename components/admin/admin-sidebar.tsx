@@ -95,7 +95,7 @@ export function AdminSidebar({
         {!collapsed && (
           <div className="min-w-0">
             <p className="text-[15px] font-black text-white tracking-wide truncate">
-              E-SURAT MANDAU
+              SI MANDAU
             </p>
             <p className="text-[9px] font-bold text-emerald-400/90 uppercase tracking-[0.05em] truncate leading-tight">
               Kemenag Barito Utara

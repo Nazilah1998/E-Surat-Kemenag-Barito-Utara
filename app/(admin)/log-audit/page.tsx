@@ -19,7 +19,7 @@ export default async function LogAuditPage() {
     <div className="space-y-6">
       <PageHeader
         title="Log Audit"
-        description="Pantau seluruh riwayat aktivitas admin di dalam sistem E-Surat"
+        description="Pantau seluruh riwayat aktivitas admin di dalam sistem SI MANDAU"
         icon={History}
       />
       <LogAuditManager

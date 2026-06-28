@@ -125,7 +125,7 @@ export default function LoginPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mt-4 sm:mt-5 text-2xl sm:text-[32px] leading-none font-black text-slate-800 tracking-tight"
           >
-            E-SURAT MANDAU
+            SI MANDAU
           </m.h1>
 
           <m.div
@@ -134,13 +134,14 @@ export default function LoginPage() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-3 sm:mt-4 space-y-1.5 px-0 sm:px-4"
           >
-            <p className="text-[11px] min-[400px]:text-xs sm:text-sm font-medium text-slate-700 leading-relaxed">
-              <span className="font-black text-slate-900">M</span>anajemen{" "}
+            <p className="text-[11px] min-[400px]:text-xs sm:text-sm font-medium text-slate-700 leading-relaxed flex flex-col gap-0.5 sm:gap-1">
+              <span><span className="font-black text-slate-900">S</span>istem <span className="font-black text-slate-900">I</span>nformasi</span>
+              <span><span className="font-black text-slate-900">M</span>anajemen{" "}
               <span className="font-black text-slate-900">A</span>genda{" "}
               <span className="font-black text-slate-900">N</span>askah{" "}
               <span className="font-black text-slate-900">D</span>inas dan{" "}
               <span className="font-black text-slate-900">A</span>dministrasi{" "}
-              <span className="font-black text-slate-900">U</span>mum.
+              <span className="font-black text-slate-900">U</span>mum.</span>
             </p>
           </m.div>
         </div>
@@ -302,7 +303,7 @@ export default function LoginPage() {
         transition={{ delay: 1, duration: 1 }}
         className="absolute bottom-6 sm:bottom-10 text-[9px] sm:text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase text-center w-full px-4"
       >
-        &copy; {new Date().getFullYear()} E-SURAT MANDAU KEMENAG BARITO UTARA
+        &copy; {new Date().getFullYear()} SI MANDAU KEMENAG BARITO UTARA
       </m.div>
     </div>
   );
